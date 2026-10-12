@@ -1,0 +1,455 @@
+[
+  {
+    "id": "snf-01",
+    "slug": "santal-velvet",
+    "name": "santal velvet",
+    "category": "Best Sellers",
+    "notesCategory": "Amber",
+    "gender": "Unisex",
+    "brand": "snifftok Atelier",
+    "headline": "Creamy Australian sandalwood wrapped in smoked cardamom and crushed iris.",
+    "isNewArrival": true,
+    "isBestSeller": true,
+    "isTester": false,
+    "rating": 4.9,
+    "reviewsCount": 128,
+    "images": [
+      "/images/products/santal.png",
+      "/images/products/lifestyle.png",
+      "/images/products/santal.png"
+    ],
+    "variants": {
+      "bottle": {
+        "type": "Bottle",
+        "sizes": [
+          { "ml": "30ml", "price": "₹3,800", "priceRaw": 3800, "inStock": true },
+          { "ml": "50ml", "price": "₹5,800", "priceRaw": 5800, "inStock": true },
+          { "ml": "100ml", "price": "₹9,400", "priceRaw": 9400, "inStock": true },
+          { "ml": "150ml", "price": "₹12,800", "priceRaw": 12800, "inStock": false },
+          { "ml": "200ml", "price": "₹15,500", "priceRaw": 15500, "inStock": false }
+        ]
+      },
+      "tester": {
+        "type": "Tester",
+        "sizes": [
+          { "ml": "2ml", "price": "₹450", "priceRaw": 450, "inStock": true },
+          { "ml": "5ml", "price": "₹850", "priceRaw": 850, "inStock": true },
+          { "ml": "10ml", "price": "₹1,450", "priceRaw": 1450, "inStock": true },
+          { "ml": "15ml", "price": "₹1,950", "priceRaw": 1950, "inStock": false },
+          { "ml": "20ml", "price": "₹2,400", "priceRaw": 2400, "inStock": false }
+        ]
+      }
+    },
+    "notes": {
+      "top": ["Cardamom", "Violet Leaf", "Papyrus"],
+      "heart": ["Orris Root", "Cedarwood", "Ambrox Super"],
+      "base": ["Australian Sandalwood", "White Leather", "Golden Amber"]
+    },
+    "details": {
+      "concentration": "Extrait de Parfum (32% oil concentration)",
+      "longevity": "12–14 Hours on skin",
+      "sillage": "Moderate to Strong aura",
+      "origin": "Grasse, France",
+      "gender": "Gender Neutral"
+    },
+    "description": "An intoxicating modern classic. Santal Velvet melds buttery sandalwood with cold aromatic cardamom and violet leaf. An addictive drydown lingers like silk against warm skin.",
+    "care": "Shield from direct UV sunlight and keep capped in a temperature-controlled environment away from bath humidity.",
+    "shipping": "Express insured courier. Dispatched within 24 hours. Free domestic returns on unopened tester seals."
+  },
+  {
+    "id": "snf-02",
+    "slug": "noir-ambrette",
+    "name": "noir ambrette",
+    "category": "New Arrivals",
+    "notesCategory": "Musk",
+    "gender": "Unisex",
+    "brand": "snifftok Atelier",
+    "headline": "Second-skin vegetal musk illuminated by crisp pear and cedarwood.",
+    "isNewArrival": true,
+    "isBestSeller": false,
+    "isTester": false,
+    "rating": 4.8,
+    "reviewsCount": 84,
+    "images": [
+      "/images/products/lifestyle.png",
+      "/images/products/santal.png",
+      "/images/products/lifestyle.png"
+    ],
+    "variants": {
+      "bottle": {
+        "type": "Bottle",
+        "sizes": [
+          { "ml": "30ml", "price": "₹3,600", "priceRaw": 3600, "inStock": true },
+          { "ml": "50ml", "price": "₹5,400", "priceRaw": 5400, "inStock": true },
+          { "ml": "100ml", "price": "₹8,900", "priceRaw": 8900, "inStock": true },
+          { "ml": "150ml", "price": "₹11,500", "priceRaw": 11500, "inStock": true },
+          { "ml": "200ml", "price": "₹14,000", "priceRaw": 14000, "inStock": false }
+        ]
+      },
+      "tester": {
+        "type": "Tester",
+        "sizes": [
+          { "ml": "2ml", "price": "₹420", "priceRaw": 420, "inStock": true },
+          { "ml": "5ml", "price": "₹790", "priceRaw": 790, "inStock": true },
+          { "ml": "10ml", "price": "₹1,350", "priceRaw": 1350, "inStock": true },
+          { "ml": "15ml", "price": "₹1,800", "priceRaw": 1800, "inStock": false },
+          { "ml": "20ml", "price": "₹2,200", "priceRaw": 2200, "inStock": false }
+        ]
+      }
+    },
+    "notes": {
+      "top": ["Green Pear", "Ambrette Seed", "Pink Pepper"],
+      "heart": ["Clean Cotton Accord", "Jasmine Petals", "Iso E Super"],
+      "base": ["White Musk", "Cedarwood", "Cashmeran"]
+    },
+    "details": {
+      "concentration": "Eau de Parfum (24% oil concentration)",
+      "longevity": "8–10 Hours on skin",
+      "sillage": "Intimate intimate-bubble",
+      "origin": "Milan, Italy",
+      "gender": "Gender Neutral"
+    },
+    "description": "Clean, hypnotic, and intimately sensual. Noir Ambrette radiates the warmth of clean linen, ambrette seed vegetal musk, and crisp autumn pear slices.",
+    "care": "Avoid direct heat exposure. Mist onto pulse points and avoid rubbing wrists together.",
+    "shipping": "Express delivery across India in 2–4 business days with tamper-proof packaging."
+  },
+  {
+    "id": "snf-03",
+    "slug": "oud-celeste",
+    "name": "oud céleste",
+    "category": "Best Sellers",
+    "notesCategory": "Oud",
+    "gender": "Unisex",
+    "brand": "snifftok Reserve",
+    "headline": "Smoked Cambodi agarwood balanced with Damascus rose and spun honey.",
+    "isNewArrival": true,
+    "isBestSeller": true,
+    "isTester": false,
+    "rating": 5.0,
+    "reviewsCount": 210,
+    "images": [
+      "/images/products/oud.png",
+      "/images/products/portrait.png",
+      "/images/products/oud.png"
+    ],
+    "variants": {
+      "bottle": {
+        "type": "Bottle",
+        "sizes": [
+          { "ml": "30ml", "price": "₹4,200", "priceRaw": 4200, "inStock": true },
+          { "ml": "50ml", "price": "₹6,800", "priceRaw": 6800, "inStock": true },
+          { "ml": "100ml", "price": "₹11,200", "priceRaw": 11200, "inStock": true },
+          { "ml": "150ml", "price": "₹14,900", "priceRaw": 14900, "inStock": false },
+          { "ml": "200ml", "price": "₹18,500", "priceRaw": 18500, "inStock": false }
+        ]
+      },
+      "tester": {
+        "type": "Tester",
+        "sizes": [
+          { "ml": "2ml", "price": "₹550", "priceRaw": 550, "inStock": true },
+          { "ml": "5ml", "price": "₹990", "priceRaw": 990, "inStock": true },
+          { "ml": "10ml", "price": "₹1,690", "priceRaw": 1690, "inStock": true },
+          { "ml": "15ml", "price": "₹2,200", "priceRaw": 2200, "inStock": true },
+          { "ml": "20ml", "price": "₹2,800", "priceRaw": 2800, "inStock": false }
+        ]
+      }
+    },
+    "notes": {
+      "top": ["Saffron Threads", "Bergamot", "Incense Tears"],
+      "heart": ["Damascus Rose", "Smoked Plum", "Cypriol"],
+      "base": ["Cambodi Oud", "Birch Tar", "Labdanum Amber"]
+    },
+    "details": {
+      "concentration": "Pure Parfum (35% oil concentration)",
+      "longevity": "16+ Hours extraordinary trail",
+      "sillage": "Room-filling, regal projection",
+      "origin": "Dubai, UAE",
+      "gender": "Gender Neutral"
+    },
+    "description": "An aristocratic oud composition made for connoisseurs. Smoked resins, lush crimson petals, and genuine aged oud craft an unforgettable celestial aura.",
+    "care": "A single spray provides all-day projection. Store upright in the presentation vault.",
+    "shipping": "Signature luxury delivery box with insured courier."
+  },
+  {
+    "id": "snf-04",
+    "slug": "matcha-reverie",
+    "name": "matcha rêverie",
+    "category": "New Arrivals",
+    "notesCategory": "Fresh",
+    "gender": "Unisex",
+    "brand": "snifftok Atelier",
+    "headline": "Ceremonial Uji matcha, white chocolate cream, and morning dew accord.",
+    "isNewArrival": true,
+    "isBestSeller": false,
+    "isTester": false,
+    "rating": 4.7,
+    "reviewsCount": 63,
+    "images": [
+      "/images/products/santal.png",
+      "/images/products/lifestyle.png",
+      "/images/products/santal.png"
+    ],
+    "variants": {
+      "bottle": {
+        "type": "Bottle",
+        "sizes": [
+          { "ml": "30ml", "price": "₹3,400", "priceRaw": 3400, "inStock": true },
+          { "ml": "50ml", "price": "₹5,200", "priceRaw": 5200, "inStock": true },
+          { "ml": "100ml", "price": "₹8,400", "priceRaw": 8400, "inStock": true },
+          { "ml": "150ml", "price": "₹11,000", "priceRaw": 11000, "inStock": false },
+          { "ml": "200ml", "price": "₹13,500", "priceRaw": 13500, "inStock": false }
+        ]
+      },
+      "tester": {
+        "type": "Tester",
+        "sizes": [
+          { "ml": "2ml", "price": "₹390", "priceRaw": 390, "inStock": true },
+          { "ml": "5ml", "price": "₹750", "priceRaw": 750, "inStock": true },
+          { "ml": "10ml", "price": "₹1,290", "priceRaw": 1290, "inStock": true },
+          { "ml": "15ml", "price": "₹1,700", "priceRaw": 1700, "inStock": false },
+          { "ml": "20ml", "price": "₹2,100", "priceRaw": 2100, "inStock": false }
+        ]
+      }
+    },
+    "notes": {
+      "top": ["Bitter Orange", "Uji Green Tea", "Crisp Fig"],
+      "heart": ["Matcha Foam", "Steamed Rice", "Orange Blossom"],
+      "base": ["White Chocolate", "Vetiver", "Light Cedar"]
+    },
+    "details": {
+      "concentration": "Eau de Parfum (22% oil concentration)",
+      "longevity": "7–9 Hours on skin",
+      "sillage": "Gentle, uplifting cloud",
+      "origin": "Kyoto, Japan",
+      "gender": "Gender Neutral"
+    },
+    "description": "Serenity captured in glass. Roasted Japanese green tea powder whipped with steamed milk nuances and a whisper of sweet white cacao.",
+    "care": "Mist lavishly onto clothes and hair for sustained crisp freshness.",
+    "shipping": "Complimentary eco-friendly express courier across all postal codes."
+  },
+  {
+    "id": "snf-05",
+    "slug": "tubereuse-blanche",
+    "name": "tubéreuse blanche",
+    "category": "Best Sellers",
+    "notesCategory": "Floral",
+    "gender": "Feminine",
+    "brand": "snifftok Atelier",
+    "headline": "Midnight-harvested Indian tuberose, whipped coconut cream, and solar amber.",
+    "isNewArrival": false,
+    "isBestSeller": true,
+    "isTester": false,
+    "rating": 4.9,
+    "reviewsCount": 97,
+    "images": [
+      "/images/products/floral.png",
+      "/images/products/lifestyle.png",
+      "/images/products/floral.png"
+    ],
+    "variants": {
+      "bottle": {
+        "type": "Bottle",
+        "sizes": [
+          { "ml": "30ml", "price": "₹3,900", "priceRaw": 3900, "inStock": true },
+          { "ml": "50ml", "price": "₹5,900", "priceRaw": 5900, "inStock": true },
+          { "ml": "100ml", "price": "₹9,800", "priceRaw": 9800, "inStock": true },
+          { "ml": "150ml", "price": "₹12,900", "priceRaw": 12900, "inStock": false },
+          { "ml": "200ml", "price": "₹15,900", "priceRaw": 15900, "inStock": false }
+        ]
+      },
+      "tester": {
+        "type": "Tester",
+        "sizes": [
+          { "ml": "2ml", "price": "₹450", "priceRaw": 450, "inStock": true },
+          { "ml": "5ml", "price": "₹850", "priceRaw": 850, "inStock": true },
+          { "ml": "10ml", "price": "₹1,450", "priceRaw": 1450, "inStock": false },
+          { "ml": "15ml", "price": "₹1,900", "priceRaw": 1900, "inStock": false },
+          { "ml": "20ml", "price": "₹2,350", "priceRaw": 2350, "inStock": false }
+        ]
+      }
+    },
+    "notes": {
+      "top": ["Pink Pepper", "Bitter Almond", "Neroli"],
+      "heart": ["Indian Tuberose Absolute", "Ylang Ylang", "Gardenia"],
+      "base": ["Bourbon Vanilla", "Coconut Nectar", "White Amber"]
+    },
+    "details": {
+      "concentration": "Extrait de Parfum (30% oil concentration)",
+      "longevity": "11–13 Hours on skin",
+      "sillage": "Hypnotic, head-turning trail",
+      "origin": "Mysore, India",
+      "gender": "Feminine Leaning"
+    },
+    "description": "A narcotic white floral elixir. Pure extracted tuberose buds unfolding under a full moon, crowned with warm almond cream and bourbon vanilla.",
+    "care": "Store away from heat and light to preserve delicate floral extracts.",
+    "shipping": "Express shipping within 24 hours."
+  },
+  {
+    "id": "snf-06",
+    "slug": "solstice-vetiver",
+    "name": "solstice vétiver",
+    "category": "New Arrivals",
+    "notesCategory": "Fresh",
+    "gender": "Masculine",
+    "brand": "snifftok Atelier",
+    "headline": "Smoky Haitian vetiver ignited by sun-drenched grapefruit and pink pepper.",
+    "isNewArrival": true,
+    "isBestSeller": false,
+    "isTester": false,
+    "rating": 4.8,
+    "reviewsCount": 76,
+    "images": [
+      "/images/products/portrait.png",
+      "/images/products/santal.png",
+      "/images/products/portrait.png"
+    ],
+    "variants": {
+      "bottle": {
+        "type": "Bottle",
+        "sizes": [
+          { "ml": "30ml", "price": "₹3,500", "priceRaw": 3500, "inStock": true },
+          { "ml": "50ml", "price": "₹5,500", "priceRaw": 5500, "inStock": true },
+          { "ml": "100ml", "price": "₹8,800", "priceRaw": 8800, "inStock": true },
+          { "ml": "150ml", "price": "₹11,900", "priceRaw": 11900, "inStock": false },
+          { "ml": "200ml", "price": "₹14,200", "priceRaw": 14200, "inStock": false }
+        ]
+      },
+      "tester": {
+        "type": "Tester",
+        "sizes": [
+          { "ml": "2ml", "price": "₹420", "priceRaw": 420, "inStock": true },
+          { "ml": "5ml", "price": "₹790", "priceRaw": 790, "inStock": true },
+          { "ml": "10ml", "price": "₹1,350", "priceRaw": 1350, "inStock": true },
+          { "ml": "15ml", "price": "₹1,800", "priceRaw": 1800, "inStock": false },
+          { "ml": "20ml", "price": "₹2,200", "priceRaw": 2200, "inStock": false }
+        ]
+      }
+    },
+    "notes": {
+      "top": ["Ruby Grapefruit", "Calabrian Bergamot", "Pink Peppercorn"],
+      "heart": ["Cardamom Pod", "Pelargonium Geranium", "Cedar Shavings"],
+      "base": ["Haitian Vetiver", "Oakmoss", "Patchouli Coeur"]
+    },
+    "details": {
+      "concentration": "Eau de Parfum (25% oil concentration)",
+      "longevity": "9–11 Hours on skin",
+      "sillage": "Clean, crisp, commanding",
+      "origin": "Les Cayes, Haiti",
+      "gender": "Masculine Leaning"
+    },
+    "description": "Sunlit citrus brilliance grounded in earthy vetiver roots. Solstice Vétiver evokes the golden hour over damp woods after sudden rain.",
+    "care": "Keep cool and dry. Apply generously to chest and collar.",
+    "shipping": "Express insured courier."
+  },
+  {
+    "id": "snf-07",
+    "slug": "amber-resine",
+    "name": "ambre résine",
+    "category": "Best Sellers",
+    "notesCategory": "Amber",
+    "gender": "Unisex",
+    "brand": "snifftok Reserve",
+    "headline": "Golden labdanum tears, benzoin resin, and rich Madagascar vanilla bean.",
+    "isNewArrival": false,
+    "isBestSeller": true,
+    "isTester": false,
+    "rating": 4.9,
+    "reviewsCount": 142,
+    "images": [
+      "/images/products/oud.png",
+      "/images/products/santal.png",
+      "/images/products/oud.png"
+    ],
+    "variants": {
+      "bottle": {
+        "type": "Bottle",
+        "sizes": [
+          { "ml": "30ml", "price": "₹3,900", "priceRaw": 3900, "inStock": true },
+          { "ml": "50ml", "price": "₹6,100", "priceRaw": 6100, "inStock": true },
+          { "ml": "100ml", "price": "₹9,900", "priceRaw": 9900, "inStock": true },
+          { "ml": "150ml", "price": "₹13,200", "priceRaw": 13200, "inStock": false },
+          { "ml": "200ml", "price": "₹16,500", "priceRaw": 16500, "inStock": false }
+        ]
+      },
+      "tester": {
+        "type": "Tester",
+        "sizes": [
+          { "ml": "2ml", "price": "₹490", "priceRaw": 490, "inStock": true },
+          { "ml": "5ml", "price": "₹890", "priceRaw": 890, "inStock": true },
+          { "ml": "10ml", "price": "₹1,550", "priceRaw": 1550, "inStock": true },
+          { "ml": "15ml", "price": "₹1,950", "priceRaw": 1950, "inStock": false },
+          { "ml": "20ml", "price": "₹2,500", "priceRaw": 2500, "inStock": false }
+        ]
+      }
+    },
+    "notes": {
+      "top": ["Cinnamon Bark", "Bitter Orange Peel", "Davana"],
+      "heart": ["Spanish Labdanum", "Myrrh", "Smoked Tonka"],
+      "base": ["Madagascar Vanilla", "Benzoin", "Golden Musk"]
+    },
+    "details": {
+      "concentration": "Extrait de Parfum (33% oil concentration)",
+      "longevity": "14–16 Hours on skin",
+      "sillage": "Rich, opulent warmth",
+      "origin": "Seville, Spain",
+      "gender": "Gender Neutral"
+    },
+    "description": "A radiant sanctuary of warm resins. Ambre Résine wraps you in deep honeyed labdanum, sweet balsams, and dark vanilla bean pods.",
+    "care": "Store in its satin pouch away from temperature spikes.",
+    "shipping": "Delivered in bespoke protective packaging."
+  },
+  {
+    "id": "snf-08",
+    "slug": "discovery-set-vault",
+    "name": "tester discovery vault",
+    "category": "Testers",
+    "notesCategory": "Oud",
+    "gender": "Unisex",
+    "brand": "snifftok Discovery",
+    "headline": "Curated set of 5 iconic extrait testers with full voucher rebate.",
+    "isNewArrival": true,
+    "isBestSeller": true,
+    "isTester": true,
+    "rating": 5.0,
+    "reviewsCount": 312,
+    "images": [
+      "/images/products/testers.png",
+      "/images/products/santal.png",
+      "/images/products/testers.png"
+    ],
+    "variants": {
+      "tester": {
+        "type": "Tester",
+        "sizes": [
+          { "ml": "2ml x 5", "price": "₹1,850", "priceRaw": 1850, "inStock": true },
+          { "ml": "5ml x 5", "price": "₹3,450", "priceRaw": 3450, "inStock": true },
+          { "ml": "10ml x 5", "price": "₹5,900", "priceRaw": 5900, "inStock": true },
+          { "ml": "15ml x 5", "price": "₹7,800", "priceRaw": 7800, "inStock": false },
+          { "ml": "20ml x 5", "price": "₹9,900", "priceRaw": 9900, "inStock": false }
+        ]
+      },
+      "bottle": {
+        "type": "Bottle",
+        "sizes": [
+          { "ml": "50ml", "price": "₹6,400", "priceRaw": 6400, "inStock": true },
+          { "ml": "100ml", "price": "₹10,500", "priceRaw": 10500, "inStock": false }
+        ]
+      }
+    },
+    "notes": {
+      "top": ["Cardamom", "Uji Matcha", "Damascus Rose"],
+      "heart": ["Orris", "Tuberose", "Ambrette"],
+      "base": ["Cambodi Oud", "Sandalwood", "Labdanum"]
+    },
+    "details": {
+      "concentration": "High Extrait Sampler Collection",
+      "longevity": "Explore all 5 master signature fragrances",
+      "sillage": "Variable per extract",
+      "origin": "Curated in Grasse & Dubai",
+      "gender": "Unisex Collection"
+    },
+    "description": "Experience the olfactory universe of snifftok. Includes Santal Velvet, Oud Céleste, Noir Ambrette, Matcha Rêverie, and Tubéreuse Blanche with a ₹1,500 voucher towards your first 50ml or 100ml flacon.",
+    "care": "Sample across consecutive days on clean, moisturized skin.",
+    "shipping": "Zero-risk discovery shipping included."
+  }
+]
