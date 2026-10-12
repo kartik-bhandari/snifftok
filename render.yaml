@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: snifftok
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NEXT_PUBLIC_WHATSAPP_NUMBER
+        value: "919876543210"
+      - key: NODE_VERSION
+        value: "20"
