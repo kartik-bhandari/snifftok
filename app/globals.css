@@ -13,7 +13,7 @@
   --color-brand-muted: #8A8A8A;
   --color-brand-blue: #2F80FF;
   --font-inter: var(--font-inter);
-  --font-syne: var(--font-syne);
+  --font-bebas: var(--font-bebas);
 }
 
 html {
@@ -26,15 +26,19 @@ body {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
   overflow-x: hidden;
 }
 
 /* Custom utilities */
 .font-wordmark {
-  font-family: var(--font-syne), sans-serif;
-  letter-spacing: -0.04em;
-  font-weight: 800;
-  text-transform: lowercase;
+  font-family: var(--font-bebas), sans-serif;
+  /* Bebas Neue is single-weight all-caps — slight positive tracking gives it luxury breathing room */
+  letter-spacing: 0.04em;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 /* Hide scrollbar utility */

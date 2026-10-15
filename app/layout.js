@@ -1,4 +1,4 @@
-import { Inter, Syne } from "next/font/google";
+import { Inter, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import AppShell from "@/components/AppShell";
 
@@ -8,10 +8,10 @@ const inter = Inter({
   display: "swap",
 });
 
-const syne = Syne({
+const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
-  weight: ["700", "800"],
-  variable: "--font-syne",
+  weight: ["400"],
+  variable: "--font-bebas",
   display: "swap",
 });
 
@@ -29,7 +29,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} ${syne.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${bebasNeue.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
         <AppShell>{children}</AppShell>
       </body>

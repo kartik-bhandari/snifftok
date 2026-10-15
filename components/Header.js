@@ -91,7 +91,7 @@ export default function Header() {
             <Link
               href="/"
               onClick={() => setIsMenuOpen(false)}
-              className="font-wordmark text-[17px] sm:text-[19px] tracking-tight text-[#0A0A0A] select-none hover:opacity-85 transition-opacity"
+              className="font-wordmark text-[18px] sm:text-[20px] text-[#0A0A0A] select-none hover:opacity-85 transition-opacity"
             >
               snifftok
             </Link>
