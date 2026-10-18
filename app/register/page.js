@@ -20,8 +20,8 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (form.password.length < 8) {
+      setError("Password must be at least 8 characters.");
       return;
     }
     setIsLoading(true);
@@ -107,7 +107,7 @@ export default function RegisterPage() {
                 required
                 value={form.password}
                 onChange={handleChange}
-                placeholder="Password (min 6 characters)"
+                placeholder="Password (min 8 characters)"
                 className="w-full bg-[#F5F5F5] rounded-xl pl-10 pr-11 py-3 text-sm text-[#0A0A0A] placeholder:text-[#ABABAB] outline-none focus:ring-2 focus:ring-[#0A0A0A]/10 transition"
               />
               <button

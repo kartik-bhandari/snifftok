@@ -1,23 +1,46 @@
 "use client";
 
+/**
+ * context/AuthContext.js
+ * Unified auth context — all requests go to the Express API at NEXT_PUBLIC_API_URL.
+ * Sends credentials: "include" so the httpOnly cookie is carried cross-origin.
+ * Adds X-Requested-With: snifftok-web on every mutating request (CSRF sentinel).
+ */
+
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:5173";
 
-  // Fetch the current session on mount
+/** Shared headers for all requests */
+const BASE_HEADERS = {
+  "Content-Type": "application/json",
+  "X-Requested-With": "snifftok-web",
+};
+
+export function AuthProvider({ children }) {
+  const [user, setUser]       = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  /** Fetch current session from the API */
   const fetchMe = useCallback(async () => {
     try {
-      const res = await fetch("/api/auth/me");
+      const res  = await fetch(`${API}/api/auth/me`, {
+        credentials: "include",
+        headers: BASE_HEADERS,
+      });
+      if (!res.ok) {
+        setUser(null);
+        return null;
+      }
       const data = await res.json();
-      setUser(data.user || null);
+      setUser(data.user ?? null);
+      return data;
     } catch {
       setUser(null);
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -27,38 +50,119 @@ export function AuthProvider({ children }) {
     fetchMe();
   }, [fetchMe]);
 
+  /**
+   * Register a new customer account.
+   * Role is ALWAYS customer — any role field is ignored by the API.
+   */
   const register = async ({ name, email, password }) => {
-    const res = await fetch("/api/auth/register", {
+    const res  = await fetch(`${API}/api/auth/register`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      headers: BASE_HEADERS,
       body: JSON.stringify({ name, email, password }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Registration failed");
+    if (!res.ok) throw new Error(data.message || "Registration failed.");
     setUser(data.user);
     return data.user;
   };
 
+  /**
+   * Log in with email + password.
+   * Returns:
+   *   { user }                         — customer login complete
+   *   { user, needs2faSetup: true }    — admin needs to set up 2FA first
+   *   { requires2fa: true, pendingToken } — admin with 2FA enabled, step 2 needed
+   */
   const login = async ({ email, password }) => {
-    const res = await fetch("/api/auth/login", {
+    const res  = await fetch(`${API}/api/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      headers: BASE_HEADERS,
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Login failed");
-    setUser(data.user);
-    return data.user;
+    if (!res.ok) throw new Error(data.message || "Login failed.");
+
+    if (data.user) setUser(data.user);
+    return data;
+  };
+
+  /**
+   * Complete the 2FA verification step.
+   * Path A (two-step login): pass code + pendingToken
+   * Path B (setup completion): pass code only (session cookie already set)
+   */
+  const verify2fa = async ({ code, pendingToken }) => {
+    const body = pendingToken ? { code, pendingToken } : { code };
+    const res  = await fetch(`${API}/api/auth/2fa/verify`, {
+      method: "POST",
+      credentials: "include",
+      headers: BASE_HEADERS,
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Verification failed.");
+    if (data.user) setUser(data.user);
+    return data;
+  };
+
+  /** Initiate 2FA setup — returns { qrCodeUrl, recoveryCodes, secret } */
+  const setup2fa = async () => {
+    const res  = await fetch(`${API}/api/auth/2fa/setup`, {
+      method: "POST",
+      credentials: "include",
+      headers: BASE_HEADERS,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Setup failed.");
+    return data;
   };
 
   const logout = async () => {
-    await fetch("/api/auth/me", { method: "POST" });
-    setUser(null);
-    router.push("/");
+    try {
+      await fetch(`${API}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+        headers: BASE_HEADERS,
+      });
+    } finally {
+      setUser(null);
+      window.location.href = "/";
+    }
+  };
+
+  /**
+   * After a successful login, handle redirect based on role.
+   * Admin/Staff → admin panel (hard navigate — different origin)
+   * Customer    → /account or returnTo path (same-origin only, no open redirect)
+   */
+  const handlePostLogin = (user, returnTo) => {
+    if (user.role === "admin" || user.role === "staff") {
+      // Hard redirect to admin panel — cannot use Next.js router here
+      window.location.assign(ADMIN_URL);
+      return;
+    }
+    // Customers stay on the storefront
+    const safePath = (returnTo && returnTo.startsWith("/") && !returnTo.startsWith("/account")) ? returnTo : "/profile";
+    window.location.href = safePath;
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, register, login, logout, refetch: fetchMe }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        isAuthenticated: !!user,
+        register,
+        login,
+        verify2fa,
+        setup2fa,
+        logout,
+        handlePostLogin,
+        refetch: fetchMe,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

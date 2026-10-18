@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bookmark, ShoppingBag, Plus, X, Search } from "lucide-react";
+import { Bookmark, ShoppingBag, Plus, X, Search, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Header() {
   const pathname = usePathname();
@@ -18,6 +19,7 @@ export default function Header() {
     setIsFragranceGuideOpen,
     wishlist,
   } = useStore();
+  const { user } = useAuth();
 
   const [isScrolled, setIsScrolled] = useState(false);
   const wishlistCount = wishlist.length;
@@ -156,6 +158,22 @@ export default function Header() {
               <span className="text-[11px] font-semibold text-[#0A0A0A]">
                 {wishlistCount}
               </span>
+            )}
+          </Link>
+
+          {/* Account icon — hidden on mobile (bottom nav handles it there) */}
+          <Link
+            href={user ? "/profile" : "/login"}
+            id="header-account-btn"
+            className="hidden sm:flex h-9 w-9 rounded-full glass-pill items-center justify-center text-[#0A0A0A] hover:bg-white active:scale-95 transition-all"
+            aria-label={user ? "My account" : "Sign in"}
+          >
+            {user ? (
+              <span className="text-[11px] font-bold leading-none">
+                {user.name?.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2) ?? "?"}
+              </span>
+            ) : (
+              <User className="w-4 h-4 stroke-[#0A0A0A]" />
             )}
           </Link>
 
