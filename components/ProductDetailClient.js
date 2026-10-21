@@ -17,45 +17,65 @@ export default function ProductDetailClient({ product, relatedProducts }) {
     setIsFragranceGuideOpen,
   } = useStore();
 
-  const isWishlisted = isInWishlist(product.slug);
+  const isWishlisted = isInWishlist(product.slug)
 
-  // Gallery state
-  const images = product.images && product.images.length > 0 ? product.images : ["/images/products/santal.png"];
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  // ── Images ────────────────────────────────────────────────────────────────
+  // API: images is [{url, publicId, order, ...}], sorted by order ascending
+  const rawImages = product.images ?? []
+  const images = rawImages.length > 0
+    ? [...rawImages].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map(img =>
+        typeof img === 'string' ? img : img.url
+      )
+    : ["/images/products/santal.png"]
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
 
-  // Variant & Size selection
+  // ── Variants ──────────────────────────────────────────────────────────────
+  // API: variants is a flat array [{type:'bottle'|'tester', sizeMl, sku, stock, pricing}, ...]
+  const bottles = (product.variants ?? []).filter(v => v.type === 'bottle')
+  const testers = (product.variants ?? []).filter(v => v.type === 'tester')
+  const hasBottles = bottles.length > 0
+  const hasTesters = testers.length > 0
+
   const [selectedVariantType, setSelectedVariantType] = useState(
-    product.isTester ? "tester" : "bottle"
-  );
+    hasBottles ? "bottle" : "tester"
+  )
 
-  const availableSizes = useMemo(() => {
-    return product.variants?.[selectedVariantType]?.sizes || [];
-  }, [product, selectedVariantType]);
+  const availableSizes = selectedVariantType === 'bottle' ? bottles : testers
 
-  const [selectedSize, setSelectedSize] = useState(() => {
-    const sizes = product.variants?.[product.isTester ? "tester" : "bottle"]?.sizes || [];
-    return sizes.find((s) => s.inStock) || sizes[0] || null;
-  });
+  const [selectedVariant, setSelectedVariant] = useState(() => {
+    const pool = hasBottles ? bottles : testers
+    return pool.find(v => (v.stock ?? 0) > 0) ?? pool[0] ?? null
+  })
 
   const handleVariantChange = (type) => {
-    setSelectedVariantType(type);
-    const newSizes = product.variants?.[type]?.sizes || [];
-    const firstInStock = newSizes.find((s) => s.inStock) || newSizes[0];
-    setSelectedSize(firstInStock || null);
-  };
+    setSelectedVariantType(type)
+    const pool = type === 'bottle' ? bottles : testers
+    setSelectedVariant(pool.find(v => (v.stock ?? 0) > 0) ?? pool[0] ?? null)
+  }
 
-  // Tabs state: "Details & Notes", "Care", "Shipping"
-  const [activeTab, setActiveTab] = useState("details");
+  // Price formatting: API price is in paise (integer)
+  function formatPaise(paise) {
+    return `₹${(paise / 100).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
+  }
+
+  const displayPrice = selectedVariant?.pricing?.unitPriceExclDelivery
+    ? formatPaise(selectedVariant.pricing.unitPriceExclDelivery)
+    : "Price on request"
+
+  // Tabs state
+  const [activeTab, setActiveTab] = useState("details")
+
+  const isInStock = (selectedVariant?.stock ?? 0) > 0
 
   const handleAddToBag = () => {
-    if (!selectedSize || !selectedSize.inStock) return;
-    addToCart(product, selectedVariantType, selectedSize, 1);
-  };
+    if (!selectedVariant || !isInStock) return
+    addToCart(product, selectedVariantType, selectedVariant, 1)
+  }
 
   const handleBuyNow = () => {
-    if (!selectedSize || !selectedSize.inStock) return;
-    addToCart(product, selectedVariantType, selectedSize, 1);
-  };
+    if (!selectedVariant || !isInStock) return
+    addToCart(product, selectedVariantType, selectedVariant, 1)
+  }
 
   return (
     <div className="flex flex-col w-full pt-16 sm:pt-20 select-none">
@@ -68,7 +88,7 @@ export default function ProductDetailClient({ product, relatedProducts }) {
           </Link>
           <span className="text-[#A0A0A0]">&gt;</span>
           <span className="uppercase tracking-wider font-semibold text-[#666666]">
-            {product.category || "Best Seller"}
+            {product.categoryId?.name ?? product.category ?? "Fragrance"}
           </span>
           <span className="text-[#A0A0A0]">&gt;</span>
           <span className="text-[#0A0A0A] capitalize truncate">
@@ -87,6 +107,7 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                 alt={product.name}
                 fill
                 priority
+                unoptimized={images[activeImageIndex]?.startsWith('http')}
                 sizes="(max-width: 1024px) 100vw, 60vw"
                 className="object-cover object-center transition-all duration-300"
               />
@@ -134,7 +155,7 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                       : "border-transparent opacity-60 hover:opacity-100"
                   }`}
                 >
-                  <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" />
+                  <Image src={img} alt={`Thumbnail ${idx + 1}`} fill unoptimized={img?.startsWith('http')} className="object-cover" />
                 </button>
               ))}
             </div>
@@ -165,7 +186,7 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                   </div>
                   {/* Price under product name in grey */}
                   <span className="text-[13px] sm:text-[15px] text-[#8A8A8A] font-medium block mt-1">
-                    {selectedSize?.price || "₹5,800"}
+                    {displayPrice}
                   </span>
                 </div>
 
@@ -179,8 +200,10 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                 </button>
               </div>
 
-              {/* Type Toggle: "Bottle" or "Tester" Segmented Control */}
+              {/* Type Toggle — only show buttons for types that have variants */}
+              {(hasBottles || hasTesters) && (
               <div className="bg-[#F2F2F2] p-1 rounded-full flex">
+                {hasBottles && (
                 <button
                   id="toggle-bottle-btn"
                   onClick={() => handleVariantChange("bottle")}
@@ -192,6 +215,8 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                 >
                   Bottle
                 </button>
+                )}
+                {hasTesters && (
                 <button
                   id="toggle-tester-btn"
                   onClick={() => handleVariantChange("tester")}
@@ -203,34 +228,34 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                 >
                   Tester
                 </button>
+                )}
               </div>
+              )}
 
-              {/* Size Chips in Wrapping Grid */}
               <div>
                 <span className="text-[11px] sm:text-[12px] font-medium text-[#8A8A8A] uppercase tracking-wider block mb-2.5">
                   Select Size
                 </span>
                 <div className="grid grid-cols-5 gap-2 sm:gap-2.5">
-                  {availableSizes.map((s) => {
-                    const isSelected = selectedSize?.ml === s.ml;
-                    const isOutOfStock = !s.inStock;
-
+                  {availableSizes.map((v) => {
+                    const isSelected = selectedVariant?._id === v._id || selectedVariant?.sku === v.sku
+                    const outOfStock = (v.stock ?? 0) <= 0
                     return (
                       <button
-                        key={s.ml}
-                        disabled={isOutOfStock}
-                        onClick={() => setSelectedSize(s)}
+                        key={v.sku ?? v._id}
+                        disabled={outOfStock}
+                        onClick={() => setSelectedVariant(v)}
                         className={`py-2 sm:py-2.5 px-1 text-center rounded-full text-[12px] sm:text-[13px] font-medium border transition-all ${
                           isSelected
                             ? "bg-[#0A0A0A] text-white border-[#0A0A0A]"
-                            : isOutOfStock
+                            : outOfStock
                             ? "bg-transparent text-[#BCBCBC] border-[#E8E8E8] line-through cursor-not-allowed"
                             : "bg-transparent text-[#0A0A0A] border-[#D6D6D6] hover:border-[#0A0A0A]"
                         }`}
                       >
-                        {s.ml}
+                        {v.sizeMl}ml
                       </button>
-                    );
+                    )
                   })}
                 </div>
               </div>
@@ -250,20 +275,20 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                 <button
                   id="add-to-bag-pdp-btn"
                   onClick={handleAddToBag}
-                  disabled={!selectedSize || !selectedSize.inStock}
+                  disabled={!isInStock}
                   className={`w-full py-3.5 sm:py-4 rounded-full text-[13px] sm:text-[14px] font-semibold tracking-wider uppercase border border-[#0A0A0A] text-[#0A0A0A] hover:bg-black/5 active:scale-98 transition-all ${
-                    !selectedSize || !selectedSize.inStock ? "opacity-40 cursor-not-allowed" : ""
+                    !isInStock ? "opacity-40 cursor-not-allowed" : ""
                   }`}
                 >
-                  {selectedSize && selectedSize.inStock ? "Add to Bag" : "Out of Stock"}
+                  {isInStock ? "Add to Bag" : "Out of Stock"}
                 </button>
 
                 <button
                   id="buy-now-pdp-btn"
                   onClick={handleBuyNow}
-                  disabled={!selectedSize || !selectedSize.inStock}
+                  disabled={!isInStock}
                   className={`w-full py-3.5 sm:py-4 rounded-full text-[13px] sm:text-[14px] font-semibold tracking-wider uppercase bg-[#0A0A0A] text-white hover:bg-black/90 active:scale-98 transition-all shadow-md ${
-                    !selectedSize || !selectedSize.inStock ? "opacity-40 cursor-not-allowed" : ""
+                    !isInStock ? "opacity-40 cursor-not-allowed" : ""
                   }`}
                 >
                   Buy Now
@@ -312,11 +337,9 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                         Specifications
                       </p>
                       <ul className="space-y-1 text-[#4A4A4A] pl-3 list-disc">
-                        <li>Concentration: {product.details?.concentration}</li>
-                        <li>Longevity: {product.details?.longevity}</li>
-                        <li>Sillage: {product.details?.sillage}</li>
-                        <li>Origin: {product.details?.origin}</li>
-                        <li>Character: {product.details?.gender}</li>
+                        {product.concentration && <li>Concentration: {product.concentration}</li>}
+                        {product.origin && <li>Origin: {product.origin}</li>}
+                        {product.brand && <li>Brand: {product.brand}</li>}
                       </ul>
                     </div>
 
@@ -397,7 +420,7 @@ export default function ProductDetailClient({ product, relatedProducts }) {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6 lg:gap-8">
           {relatedProducts.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <ProductCard key={p._id ?? p.id} product={p} />
           ))}
         </div>
       </section>

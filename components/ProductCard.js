@@ -11,15 +11,36 @@ export default function ProductCard({ product }) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
-  const images = product.images && product.images.length > 0 ? product.images : ["/images/products/santal.png"];
-  const isWishlisted = isInWishlist(product.slug);
+  // Images: API returns [{url, publicId, ...}], old JSON was plain strings
+  const rawImages = product.images ?? []
+  const images = rawImages.length > 0
+    ? rawImages.map(img => (typeof img === 'string' ? img : img.url))
+    : ["/images/products/santal.png"]
+  const isWishlisted = isInWishlist(product.slug)
 
-  // Default displayed price comes directly from precomputed data
-  const displayPrice =
-    product.variants?.bottle?.sizes?.[1]?.price ||
-    product.variants?.bottle?.sizes?.[0]?.price ||
-    product.variants?.tester?.sizes?.[0]?.price ||
-    "₹5,800";
+  // Price: API returns paise in variants[].pricing.unitPriceExclDelivery
+  // Old JSON used variants.bottle.sizes[0].price (string like "₹5,800")
+  function formatPaise(paise) {
+    return `₹${(paise / 100).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
+  }
+
+  const displayPrice = (() => {
+    const vars = product.variants ?? []
+    // Prefer the cheapest bottle, then tester
+    const bottles = vars.filter(v => v.type === 'bottle')
+    const testers = vars.filter(v => v.type === 'tester')
+    const pick    = bottles[0] ?? testers[0] ?? vars[0]
+    if (pick?.pricing?.unitPriceExclDelivery) {
+      return formatPaise(pick.pricing.unitPriceExclDelivery)
+    }
+    // Legacy JSON fallback
+    return (
+      product.variants?.bottle?.sizes?.[1]?.price ||
+      product.variants?.bottle?.sizes?.[0]?.price ||
+      product.variants?.tester?.sizes?.[0]?.price ||
+      "Price on request"
+    )
+  })()
 
   const handleNextImage = (e) => {
     e.preventDefault();
@@ -47,6 +68,7 @@ export default function ProductCard({ product }) {
 
   // Determine current image: if user hovered on desktop and hasn't manually clicked dots, show second image
   const displayedImage = isHovered && images.length > 1 && activeImageIndex === 0 ? images[1] : images[activeImageIndex] || images[0];
+  const isExternal = displayedImage?.startsWith('http')
 
   return (
     <div
@@ -61,6 +83,7 @@ export default function ProductCard({ product }) {
             src={displayedImage}
             alt={product.name}
             fill
+            unoptimized={isExternal}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-104"
           />

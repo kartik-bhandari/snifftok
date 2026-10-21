@@ -4,74 +4,102 @@ import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
 import FeatureSection from "@/components/FeatureSection";
 import Footer from "@/components/Footer";
-import productsData from "@/data/products.json";
+import { fetchProducts } from "@/lib/products"
 
-export default function HomePage() {
-  const newArrivals = productsData.filter((p) => p.isNewArrival);
-  const bestSellers = productsData.filter((p) => p.isBestSeller);
-  const testers = productsData.filter((p) => p.isTester || p.variants?.tester);
+export default async function HomePage() {
+  // Fetch products from the live API
+  const [newRes, bestRes, testersRes] = await Promise.all([
+    fetchProducts({ tag: "new",         limit: 8 }),
+    fetchProducts({ tag: "best-seller", limit: 8 }),
+    fetchProducts({ type: "tester",     limit: 8 }),
+  ]);
+
+  const newArrivals = newRes.data   ?? [];
+  const bestSellers = bestRes.data  ?? [];
+  const testers     = testersRes.data ?? [];
+
+  // If there are no tagged products yet, fall back to showing the latest
+  const fallback = newArrivals.length === 0 && bestSellers.length === 0 && testers.length === 0;
+  const latestRes = fallback ? await fetchProducts({ limit: 8 }) : null;
+  const latest    = latestRes?.data ?? [];
+
+  const displayNew  = newArrivals.length > 0 ? newArrivals : latest;
+  const displayBest = bestSellers.length > 0 ? bestSellers : [];
+  const displayTest = testers.length > 0     ? testers     : [];
 
   return (
     <div className="flex flex-col w-full pb-16 sm:pb-20">
       {/* 1. Full-screen Hero */}
       <Hero />
 
-      {/* 2. "New arrivals" Section (Reference 2x2 Grid on Mobile, Responsive Grid on Desktop) */}
-      <section id="new-arrivals" className="w-full max-w-7xl mx-auto pt-6 sm:pt-10 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-8 scroll-mt-[72px] sm:scroll-mt-20">
-        {/* Section Header */}
-        <div className="flex items-center justify-between pb-4 sm:pb-6 px-0.5">
-          <div>
-            <h1 className="text-[18px] sm:text-[24px] font-bold text-[#0A0A0A] tracking-tight">
-              New arrivals
-            </h1>
-            <p className="text-[12px] sm:text-[14px] text-[#8A8A8A] hidden sm:block mt-0.5">
-              Limited-run extraits composed with rare absolutes and aged essences.
-            </p>
+      {/* 2. "New arrivals" Section */}
+      {displayNew.length > 0 && (
+        <section id="new-arrivals" className="w-full max-w-7xl mx-auto pt-6 sm:pt-10 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-8 scroll-mt-[72px] sm:scroll-mt-20">
+          <div className="flex items-center justify-between pb-4 sm:pb-6 px-0.5">
+            <div>
+              <h1 className="text-[18px] sm:text-[24px] font-bold text-[#0A0A0A] tracking-tight">
+                {newArrivals.length > 0 ? "New arrivals" : "Products"}
+              </h1>
+              <p className="text-[12px] sm:text-[14px] text-[#8A8A8A] hidden sm:block mt-0.5">
+                Limited-run extraits composed with rare absolutes and aged essences.
+              </p>
+            </div>
+            <Link
+              href="/categories"
+              className="bg-white hover:bg-white/80 active:scale-95 text-[#0A0A0A] text-[12px] sm:text-[13px] font-medium px-4 sm:px-5 py-2 rounded-full shadow-xs border border-white/60 transition-transform"
+            >
+              Discover more
+            </Link>
           </div>
 
-          <Link
-            href="/#new-arrivals"
-            className="bg-white hover:bg-white/80 active:scale-95 text-[#0A0A0A] text-[12px] sm:text-[13px] font-medium px-4 sm:px-5 py-2 rounded-full shadow-xs border border-white/60 transition-transform"
-          >
-            Discover more
-          </Link>
+          {/* Mobile: 2×2 grid */}
+          <div className="grid grid-cols-2 gap-3.5 sm:hidden">
+            {displayNew.slice(0, 4).map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+
+          {/* Tablet / Desktop */}
+          <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
+            {displayNew.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 3. Best sellers */}
+      {displayBest.length > 0 && (
+        <FeatureSection
+          id="best-sellers"
+          title="Best sellers"
+          products={displayBest}
+          discoverHref="/categories"
+        />
+      )}
+
+      {/* 4. Testers & Samples */}
+      {displayTest.length > 0 && (
+        <FeatureSection
+          id="testers"
+          title="Testers & Samples"
+          products={displayTest}
+          discoverHref="/categories"
+        />
+      )}
+
+      {/* Empty state — no products yet */}
+      {displayNew.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-32 text-center px-4">
+          <p className="text-[32px] mb-3">🌸</p>
+          <h2 className="text-xl font-semibold text-[#0A0A0A] mb-2">Coming soon</h2>
+          <p className="text-[#8A8A8A] text-sm">
+            Our collection is being curated. Check back soon.
+          </p>
         </div>
+      )}
 
-        {/* Mobile View: Exactly 4 products (2x2 grid matching reference Screenshot 2 & 3) */}
-        <div className="grid grid-cols-2 gap-3.5 sm:hidden">
-          {newArrivals.slice(0, 4).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-
-        {/* Tablet / Desktop View: Full Responsive Grid */}
-        <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
-          {newArrivals.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-
-      {/* 3. Feature Section: "Best sellers" */}
-      <FeatureSection
-        id="best-sellers"
-        title="Best sellers"
-        products={bestSellers}
-        discoverHref="/#best-sellers"
-      />
-
-      {/* 4. Feature Section: "Testers & Samples" */}
-      <FeatureSection
-        id="testers"
-        title="Testers & Samples"
-        products={testers}
-        discoverHref="/#testers"
-      />
-
-      {/* Separation before footer: large on mobile to prevent dock collision, compact on desktop */}
       <div className="h-44 sm:h-28 md:h-12 w-full" />
-
-      {/* 5. Footer */}
       <Footer />
     </div>
   );

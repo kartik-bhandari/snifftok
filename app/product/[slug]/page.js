@@ -1,41 +1,33 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import ProductDetailClient from "@/components/ProductDetailClient";
-import productsData from "@/data/products.json";
+import { fetchProduct, fetchProducts } from "@/lib/products";
 
-export function generateStaticParams() {
-  return productsData.map((product) => ({
-    slug: product.slug,
-  }));
+/** Pre-render the first page of products at build time */
+export async function generateStaticParams() {
+  const res = await fetchProducts({ limit: 50 });
+  return (res.data ?? []).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }) {
-  const resolvedParams = await params;
-  const product = productsData.find((p) => p.slug === resolvedParams.slug);
-  if (!product) return { title: "Product Not Found | snifftok" };
+  const { slug } = await params;
+  const data = await fetchProduct(slug);
+  if (!data) return { title: "Product Not Found | snifftok" };
 
+  const { product } = data;
   return {
-    title: `${product.name} | snifftok`,
-    description: product.headline || product.description,
+    title:       `${product.name} | snifftok`,
+    description: product.description ?? `${product.name} — shop at snifftok`,
   };
 }
 
 export default async function ProductPage({ params }) {
-  const resolvedParams = await params;
-  const product = productsData.find((p) => p.slug === resolvedParams.slug);
+  const { slug } = await params;
+  const data = await fetchProduct(slug);
 
-  if (!product) {
-    notFound();
-  }
+  if (!data) notFound();
 
-  const relatedProducts = productsData
-    .filter((p) => p.slug !== product.slug)
-    .slice(0, 4);
+  const { product, related } = data;
 
-  return (
-    <ProductDetailClient
-      product={product}
-      relatedProducts={relatedProducts}
-    />
-  );
+  return <ProductDetailClient product={product} relatedProducts={related} />;
 }

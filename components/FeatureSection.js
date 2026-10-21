@@ -20,7 +20,7 @@ export default function FeatureSection({ title, products, discoverHref = "#", id
   return (
     <section id={id} className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-9 sm:my-12 scroll-mt-[72px] sm:scroll-mt-20">
       <div className="bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-7 lg:p-8 shadow-xs">
-        {/* Header Row: Title at Left, Desktop Arrows & Black Pill "Discover more" at Right */}
+        {/* Header Row */}
         <div className="flex items-center justify-between pb-4 sm:pb-6 px-0.5">
           <h2 className="text-[17px] sm:text-[21px] font-bold text-[#0A0A0A] tracking-tight">
             {title}
@@ -61,15 +61,22 @@ export default function FeatureSection({ title, products, discoverHref = "#", id
         >
           {products.map((product) => {
             const isWishlisted = isInWishlist(product.slug);
-            const price =
-              product.variants?.tester?.sizes?.[0]?.price ||
-              product.variants?.bottle?.sizes?.[0]?.price ||
-              "₹3,800";
-            const image = product.images?.[0] || "/images/products/santal.png";
+
+            // Images: API returns [{url, publicId, ...}] — extract .url
+            const rawImg = product.images?.[0];
+            const image = (typeof rawImg === "string" ? rawImg : rawImg?.url) || "/images/products/santal.png";
+            const isExternal = image.startsWith("http");
+
+            // Price: API returns paise in variants[].pricing.unitPriceExclDelivery
+            const vars = product.variants ?? [];
+            const pick = vars.find((v) => v.type === "bottle") ?? vars[0];
+            const price = pick?.pricing?.unitPriceExclDelivery
+              ? `₹${Math.round(pick.pricing.unitPriceExclDelivery / 100).toLocaleString("en-IN")}`
+              : (product.variants?.bottle?.sizes?.[0]?.price ?? "Price on request");
 
             return (
               <div
-                key={product.id}
+                key={product._id ?? product.id}
                 className="flex-none w-[160px] sm:w-[210px] lg:w-[230px] flex flex-col group select-none transition-transform"
               >
                 {/* Card Image */}
@@ -79,6 +86,7 @@ export default function FeatureSection({ title, products, discoverHref = "#", id
                       src={image}
                       alt={product.name}
                       fill
+                      unoptimized={isExternal}
                       sizes="(max-width: 640px) 160px, 230px"
                       className="object-cover object-center group-hover:scale-104 transition-transform duration-500 ease-out"
                     />
