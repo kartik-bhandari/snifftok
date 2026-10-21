@@ -7,27 +7,34 @@
 
 const API = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000'
 
+// Headers that must NOT be forwarded — they'd conflict with the re-assembled body
+const DROP_HEADERS = new Set([
+  'host',
+  'content-length',     // fetch recalculates from the body
+  'transfer-encoding',  // we send a full body, not chunked
+  'connection',
+])
+
 async function handler(req, { params }) {
   const path = (await params).path?.join('/') ?? ''
   const url  = `${API}/api/auth/${path}`
 
-  // Forward the incoming request body
+  // Read body for mutating methods
   let body = undefined
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     body = await req.text()
   }
 
-  // Forward all headers except host
+  // Forward safe headers
   const headers = {}
   req.headers.forEach((val, key) => {
-    if (key.toLowerCase() !== 'host') headers[key] = val
+    if (!DROP_HEADERS.has(key.toLowerCase())) headers[key] = val
   })
 
   const upstream = await fetch(url, {
     method:  req.method,
     headers,
     body,
-    // Don't follow redirects — proxy them raw
     redirect: 'manual',
   })
 
