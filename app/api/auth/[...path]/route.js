@@ -1,50 +1,60 @@
 /**
  * app/api/auth/[...path]/route.js
- * Proxies all /api/auth/* requests to the backend API.
- * Because this runs on the SAME domain as the storefront,
- * the session cookie is set/read as first-party — no cross-origin cookie issues.
+ * Proxies /api/auth/* to the backend — runs on the storefront domain so the
+ * session cookie is set/read as first-party (no cross-origin cookie issues).
  */
 
 const API = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000'
 
-// Headers that must NOT be forwarded — they'd conflict with the re-assembled body
-const DROP_HEADERS = new Set([
-  'host',
-  'content-length',     // fetch recalculates from the body
-  'transfer-encoding',  // we send a full body, not chunked
-  'connection',
-])
-
 async function handler(req, { params }) {
   const path = (await params).path?.join('/') ?? ''
-  const url  = `${API}/api/auth/${path}`
+  const url  = `${API}/api/auth/${path}${req.nextUrl?.search ?? ''}`
 
-  // Read body for mutating methods
+  // ── Read body ────────────────────────────────────────────────────────────────
   let body = undefined
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     body = await req.text()
   }
 
-  // Forward safe headers
-  const headers = {}
-  req.headers.forEach((val, key) => {
-    if (!DROP_HEADERS.has(key.toLowerCase())) headers[key] = val
-  })
+  // ── Build request headers — only forward what the API needs ──────────────────
+  const reqHeaders = {
+    'content-type':    req.headers.get('content-type') ?? 'application/json',
+    'x-requested-with': req.headers.get('x-requested-with') ?? 'snifftok-web',
+  }
+  const cookie = req.headers.get('cookie')
+  if (cookie) reqHeaders['cookie'] = cookie
 
-  const upstream = await fetch(url, {
-    method:  req.method,
-    headers,
-    body,
-    redirect: 'manual',
-  })
+  // ── Forward to upstream API ──────────────────────────────────────────────────
+  let upstream
+  try {
+    upstream = await fetch(url, {
+      method:  req.method,
+      headers: reqHeaders,
+      body,
+    })
+  } catch (err) {
+    console.error('[auth-proxy] upstream error:', err)
+    return new Response(JSON.stringify({ message: 'API unavailable' }), {
+      status:  502,
+      headers: { 'content-type': 'application/json' },
+    })
+  }
 
-  // Copy response headers (including Set-Cookie)
-  const resHeaders = {}
-  upstream.headers.forEach((val, key) => {
-    resHeaders[key] = val
-  })
+  // ── Build response headers — only forward what the client needs ───────────────
+  const resHeaders = {
+    'content-type': upstream.headers.get('content-type') ?? 'application/json',
+  }
 
-  const resBody = await upstream.arrayBuffer()
+  // Forward all Set-Cookie headers (session cookie)
+  const raw = upstream.headers.raw?.()
+  if (raw?.['set-cookie']) {
+    resHeaders['set-cookie'] = raw['set-cookie'].join(', ')
+  } else {
+    const sc = upstream.headers.get('set-cookie')
+    if (sc) resHeaders['set-cookie'] = sc
+  }
+
+  const resBody = await upstream.text()
 
   return new Response(resBody, {
     status:  upstream.status,
