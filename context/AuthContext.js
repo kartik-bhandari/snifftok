@@ -11,7 +11,9 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 
 const AuthContext = createContext(null);
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+// Auth goes through the Next.js proxy route (same domain → first-party cookie)
+const AUTH = "/api/auth";
+
 const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:5173";
 
 /** Shared headers for all requests */
@@ -27,7 +29,7 @@ export function AuthProvider({ children }) {
   /** Fetch current session from the API */
   const fetchMe = useCallback(async () => {
     try {
-      const res  = await fetch(`${API}/api/auth/me`, {
+      const res  = await fetch(`${AUTH}/me`, {
         credentials: "include",
         headers: BASE_HEADERS,
       });
@@ -55,7 +57,7 @@ export function AuthProvider({ children }) {
    * Role is ALWAYS customer — any role field is ignored by the API.
    */
   const register = async ({ name, email, password }) => {
-    const res  = await fetch(`${API}/api/auth/register`, {
+    const res  = await fetch(`${AUTH}/register`, {
       method: "POST",
       credentials: "include",
       headers: BASE_HEADERS,
@@ -75,7 +77,7 @@ export function AuthProvider({ children }) {
    *   { requires2fa: true, pendingToken } — admin with 2FA enabled, step 2 needed
    */
   const login = async ({ email, password }) => {
-    const res  = await fetch(`${API}/api/auth/login`, {
+    const res  = await fetch(`${AUTH}/login`, {
       method: "POST",
       credentials: "include",
       headers: BASE_HEADERS,
@@ -95,7 +97,7 @@ export function AuthProvider({ children }) {
    */
   const verify2fa = async ({ code, pendingToken }) => {
     const body = pendingToken ? { code, pendingToken } : { code };
-    const res  = await fetch(`${API}/api/auth/2fa/verify`, {
+    const res  = await fetch(`${AUTH}/2fa/verify`, {
       method: "POST",
       credentials: "include",
       headers: BASE_HEADERS,
@@ -109,7 +111,7 @@ export function AuthProvider({ children }) {
 
   /** Initiate 2FA setup — returns { qrCodeUrl, recoveryCodes, secret } */
   const setup2fa = async () => {
-    const res  = await fetch(`${API}/api/auth/2fa/setup`, {
+    const res  = await fetch(`${AUTH}/2fa/setup`, {
       method: "POST",
       credentials: "include",
       headers: BASE_HEADERS,
@@ -121,7 +123,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch(`${API}/api/auth/logout`, {
+      await fetch(`${AUTH}/logout`, {
         method: "POST",
         credentials: "include",
         headers: BASE_HEADERS,
