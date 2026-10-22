@@ -98,7 +98,8 @@ export function StoreProvider({ children }) {
           ml: selectedSize.ml,
           price: selectedSize.price,
           priceRaw: selectedSize.priceRaw,
-          image: product.images?.[0] || "/images/products/santal.png",
+          image: product.images?.[0]?.url || "/images/products/santal.png",
+
           quantity,
           isTester: variantType.toLowerCase() === "tester" || product.isTester,
         },
@@ -138,7 +139,8 @@ export function StoreProvider({ children }) {
             slug: product.slug,
             name: product.name,
             price: product.variants?.bottle?.sizes?.[0]?.price || "₹5,800",
-            image: product.images?.[0],
+            image: product.images?.[0]?.url,
+
             brand: product.brand,
           },
         ];
