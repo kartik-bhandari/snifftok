@@ -6,9 +6,13 @@
 
 const API = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000'
 
+// Log on first load so we can confirm the env var is set in Render logs
+console.log('[auth-proxy] target API:', API)
+
 async function handler(req, { params }) {
-  const path = (await params).path?.join('/') ?? ''
-  const url  = `${API}/api/auth/${path}${req.nextUrl?.search ?? ''}`
+  const path   = (await params).path?.join('/') ?? ''
+  const search = new URL(req.url).search ?? ''
+  const url    = `${API}/api/auth/${path}${search}`
 
   // ── Read body ────────────────────────────────────────────────────────────────
   let body = undefined
