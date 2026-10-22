@@ -17,14 +17,27 @@ export function StoreProvider({ children }) {
   const [isFragranceGuideOpen, setIsFragranceGuideOpen] = useState(false);
   const [quickAddProduct, setQuickAddProduct] = useState(null);
 
+  // Normalize image: old items stored the full {url, publicId} object; new items store a URL string
+  const normalizeImage = (img) => {
+    if (!img) return null;
+    if (typeof img === "string") return img;
+    return img?.url ?? null;
+  };
+
   // Load from localStorage on client mount
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem("snifftok_cart");
-      if (savedCart) setCart(JSON.parse(savedCart));
+      if (savedCart) {
+        const parsed = JSON.parse(savedCart);
+        setCart(parsed.map((item) => ({ ...item, image: normalizeImage(item.image) })));
+      }
 
       const savedWishlist = localStorage.getItem("snifftok_wishlist");
-      if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+      if (savedWishlist) {
+        const parsed = JSON.parse(savedWishlist);
+        setWishlist(parsed.map((item) => ({ ...item, image: normalizeImage(item.image) })));
+      }
     } catch (e) {
       console.error("Failed to load local storage state:", e);
     } finally {
@@ -73,7 +86,8 @@ export function StoreProvider({ children }) {
 
     if (!selectedSize) return;
 
-    const itemKey = `${product.id}-${variantType}-${selectedSize.ml}`;
+    const pid     = product.id ?? product._id?.toString()
+    const itemKey = `${pid}-${variantType}-${selectedSize.ml}`;
 
     setCart((prevCart) => {
       const existingIndex = prevCart.findIndex((item) => item.itemKey === itemKey);
@@ -90,7 +104,7 @@ export function StoreProvider({ children }) {
         ...prevCart,
         {
           itemKey,
-          productId: product.id,
+          productId: pid,
           slug: product.slug,
           name: product.name,
           brand: product.brand,

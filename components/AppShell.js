@@ -9,7 +9,6 @@ import MenuOverlay from "@/components/MenuOverlay";
 import CartSheet from "@/components/CartSheet";
 import SearchOverlay from "@/components/SearchOverlay";
 import FragranceGuideModal from "@/components/FragranceGuideModal";
-import QuickAddSheet from "@/components/QuickAddSheet";
 
 export default function AppShell({ children }) {
   return (
@@ -30,7 +29,6 @@ export default function AppShell({ children }) {
           <CartSheet />
           <SearchOverlay />
           <FragranceGuideModal />
-          <QuickAddSheet />
         </div>
       </StoreProvider>
     </AuthProvider>

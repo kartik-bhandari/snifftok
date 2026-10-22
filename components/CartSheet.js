@@ -102,7 +102,11 @@ export default function CartSheet() {
                     {/* Thumbnail */}
                     <div className="relative w-18 h-22 rounded-[14px] overflow-hidden bg-[#F0F0F0] shrink-0">
                       <Image
-                        src={item.image || "/images/products/santal.png"}
+                        src={
+                          typeof item.image === "string"
+                            ? item.image
+                            : item.image?.url || "/images/products/santal.png"
+                        }
                         alt={item.name}
                         fill
                         sizes="72px"

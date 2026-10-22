@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Bookmark, Plus } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 
 export default function ProductCard({ product }) {
-  const { isInWishlist, toggleWishlist, setQuickAddProduct } = useStore();
+  const { isInWishlist, toggleWishlist } = useStore();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -54,11 +54,6 @@ export default function ProductCard({ product }) {
     setActiveImageIndex(idx);
   };
 
-  const handleQuickAdd = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setQuickAddProduct(product);
-  };
 
   const handleWishlistToggle = (e) => {
     e.preventDefault();
@@ -122,28 +117,17 @@ export default function ProductCard({ product }) {
         </div>
       </div>
 
-      {/* Info Row: Name & Grey Price at Left, Small "+" Icon at Right */}
-      <div className="pt-2.5 sm:pt-3 px-0.5 flex items-start justify-between gap-2">
-        <div className="flex flex-col min-w-0 pr-1">
-          <Link
-            href={`/product/${product.slug}`}
-            className="text-[13px] sm:text-[14px] font-medium leading-snug text-[#0A0A0A] truncate capitalize hover:underline underline-offset-2"
-          >
-            {product.name}
-          </Link>
-          <span className="text-[12px] sm:text-[13px] text-[#8A8A8A] font-normal tracking-tight mt-0.5">
-            {displayPrice}
-          </span>
-        </div>
-
-        {/* Small "+" quick-add button with hover effect */}
-        <button
-          onClick={handleQuickAdd}
-          aria-label={`Quick add ${product.name} to bag`}
-          className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[#0A0A0A] bg-transparent hover:bg-black/5 sm:hover:bg-[#0A0A0A] sm:hover:text-white active:scale-90 transition-all shrink-0 mt-0.5"
+      {/* Info Row: Name & Price */}
+      <div className="pt-2.5 sm:pt-3 px-0.5">
+        <Link
+          href={`/product/${product.slug}`}
+          className="text-[13px] sm:text-[14px] font-medium leading-snug text-[#0A0A0A] truncate capitalize hover:underline underline-offset-2 block"
         >
-          <Plus className="w-3.5 h-3.5 stroke-[2]" />
-        </button>
+          {product.name}
+        </Link>
+        <span className="text-[12px] sm:text-[13px] text-[#8A8A8A] font-normal tracking-tight mt-0.5 block">
+          {displayPrice}
+        </span>
       </div>
     </div>
   );

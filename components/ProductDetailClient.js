@@ -69,12 +69,26 @@ export default function ProductDetailClient({ product, relatedProducts }) {
 
   const handleAddToBag = () => {
     if (!selectedVariant || !isInStock) return
-    addToCart(product, selectedVariantType, selectedVariant, 1)
+    const paise   = selectedVariant.pricing?.unitPriceExclDelivery ?? 0
+    const sizeObj = {
+      ml:       `${selectedVariant.sizeMl}ml`,
+      price:    formatPaise(paise),
+      priceRaw: Math.round(paise / 100),   // rupees integer for calculations
+      inStock:  true,
+    }
+    addToCart(product, selectedVariantType, sizeObj, 1)
   }
 
   const handleBuyNow = () => {
     if (!selectedVariant || !isInStock) return
-    addToCart(product, selectedVariantType, selectedVariant, 1)
+    const paise   = selectedVariant.pricing?.unitPriceExclDelivery ?? 0
+    const sizeObj = {
+      ml:       `${selectedVariant.sizeMl}ml`,
+      price:    formatPaise(paise),
+      priceRaw: Math.round(paise / 100),
+      inStock:  true,
+    }
+    addToCart(product, selectedVariantType, sizeObj, 1)
   }
 
   return (

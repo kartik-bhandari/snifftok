@@ -7,7 +7,8 @@ import { Plus, Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 
 export default function FeatureSection({ title, products, discoverHref = "#", id }) {
-  const { isInWishlist, toggleWishlist, setQuickAddProduct } = useStore();
+  const { isInWishlist, toggleWishlist } = useStore();
+
   const scrollRef = useRef(null);
 
   const scroll = (direction) => {
@@ -123,17 +124,7 @@ export default function FeatureSection({ title, products, discoverHref = "#", id
                     </span>
                   </div>
 
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setQuickAddProduct(product);
-                    }}
-                    aria-label={`Quick add ${product.name}`}
-                    className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[#0A0A0A] hover:bg-[#0A0A0A] hover:text-white active:scale-90 transition-all shrink-0 mt-0.5"
-                  >
-                    <Plus className="w-3.5 h-3.5 stroke-[2]" />
-                  </button>
+
                 </div>
               </div>
             );
