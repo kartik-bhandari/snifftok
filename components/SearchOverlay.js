@@ -41,9 +41,9 @@ export default function SearchOverlay() {
   useEffect(() => {
     if (!isSearchOpen || products.length > 0) return;
     setLoading(true);
-    fetch(`${API}/api/products?limit=200&sort=name`)
+    fetch(`${API}/api/storefront/products?limit=200`)
       .then((r) => r.json())
-      .then((data) => setProducts(data.products ?? []))
+      .then((data) => setProducts(data.data ?? []))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [isSearchOpen]);
