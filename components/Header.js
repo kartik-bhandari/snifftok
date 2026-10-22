@@ -142,24 +142,26 @@ export default function Header() {
 
         {/* Right: Wishlist & Bag icons */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Wishlist Link */}
-          <Link
-            href="/wishlist"
-            id="header-wishlist-btn"
-            className="h-9 px-2.5 sm:px-3 rounded-full glass-pill flex items-center justify-center gap-1.5 text-[#0A0A0A] hover:bg-white active:scale-95 transition-all relative"
-            aria-label="Wishlist"
-          >
-            <Bookmark
-              className={`w-4 h-4 ${
-                wishlistCount > 0 ? "fill-[#0A0A0A] stroke-[#0A0A0A]" : "stroke-[#0A0A0A]"
-              }`}
-            />
-            {wishlistCount > 0 && (
-              <span className="text-[11px] font-semibold text-[#0A0A0A]">
-                {wishlistCount}
-              </span>
-            )}
-          </Link>
+          {/* Wishlist Link — only shown when logged in */}
+          {user && (
+            <Link
+              href="/wishlist"
+              id="header-wishlist-btn"
+              className="h-9 px-2.5 sm:px-3 rounded-full glass-pill flex items-center justify-center gap-1.5 text-[#0A0A0A] hover:bg-white active:scale-95 transition-all relative"
+              aria-label="Wishlist"
+            >
+              <Bookmark
+                className={`w-4 h-4 ${
+                  wishlistCount > 0 ? "fill-[#0A0A0A] stroke-[#0A0A0A]" : "stroke-[#0A0A0A]"
+                }`}
+              />
+              {wishlistCount > 0 && (
+                <span className="text-[11px] font-semibold text-[#0A0A0A]">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* Account icon — hidden on mobile (bottom nav handles it there) */}
           <Link
@@ -177,23 +179,25 @@ export default function Header() {
             )}
           </Link>
 
-          {/* Cart / Bag Button */}
-          <button
-            id="header-bag-btn"
-            onClick={() => setIsCartOpen(true)}
-            className="h-9 px-3 sm:px-3.5 rounded-full glass-pill flex items-center justify-center gap-2 text-[#0A0A0A] hover:bg-white active:scale-95 transition-all relative"
-            aria-label={`Shopping bag with ${cartCount} items`}
-          >
-            <ShoppingBag className="w-4 h-4 stroke-[#0A0A0A]" />
-            <span className="text-[12px] font-semibold text-[#0A0A0A] hidden sm:inline">
-              Bag
-            </span>
-            {cartCount > 0 && (
-              <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#0A0A0A] text-white text-[10px] font-semibold flex items-center justify-center">
-                {cartCount}
+          {/* Cart / Bag Button — only shown when logged in */}
+          {user && (
+            <button
+              id="header-bag-btn"
+              onClick={() => setIsCartOpen(true)}
+              className="h-9 px-3 sm:px-3.5 rounded-full glass-pill flex items-center justify-center gap-2 text-[#0A0A0A] hover:bg-white active:scale-95 transition-all relative"
+              aria-label={`Shopping bag with ${cartCount} items`}
+            >
+              <ShoppingBag className="w-4 h-4 stroke-[#0A0A0A]" />
+              <span className="text-[12px] font-semibold text-[#0A0A0A] hidden sm:inline">
+                Bag
               </span>
-            )}
-          </button>
+              {cartCount > 0 && (
+                <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#0A0A0A] text-white text-[10px] font-semibold flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </header>
