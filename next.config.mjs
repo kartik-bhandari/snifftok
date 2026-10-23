@@ -18,6 +18,15 @@ const nextConfig = {
       { protocol: 'http',  hostname: 'localhost' },
     ],
   },
+  async rewrites() {
+    const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${API}/api/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

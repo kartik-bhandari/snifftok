@@ -17,6 +17,7 @@ export default function CartSheet() {
     subtotalFormatted,
     shippingInfo,
     totalAmountFormatted,
+    setIsCheckoutOpen,
   } = useStore();
 
   return (
@@ -200,7 +201,8 @@ export default function CartSheet() {
                 <button
                   id="checkout-cta-btn"
                   onClick={() => {
-                    alert("Proceeding to secure checkout! Backend integration will process payment.");
+                    setIsCartOpen(false);
+                    setIsCheckoutOpen(true);
                   }}
                   className="w-full py-3.5 rounded-full bg-[#0A0A0A] text-white text-[13px] font-semibold tracking-wider uppercase hover:bg-black/90 active:scale-98 transition-all shadow-md"
                 >

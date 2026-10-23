@@ -15,6 +15,7 @@ export function StoreProvider({ children }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isFragranceGuideOpen, setIsFragranceGuideOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [quickAddProduct, setQuickAddProduct] = useState(null);
 
   // Normalize image: old items stored the full {url, publicId} object; new items store a URL string
@@ -67,7 +68,7 @@ export function StoreProvider({ children }) {
 
   // Prevent scroll when any modal/overlay is open
   useEffect(() => {
-    const isAnyOpen = isMenuOpen || isCartOpen || isSearchOpen || isFragranceGuideOpen || !!quickAddProduct;
+    const isAnyOpen = isMenuOpen || isCartOpen || isSearchOpen || isFragranceGuideOpen || isCheckoutOpen || !!quickAddProduct;
     if (isAnyOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -76,7 +77,7 @@ export function StoreProvider({ children }) {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isMenuOpen, isCartOpen, isSearchOpen, isFragranceGuideOpen, quickAddProduct]);
+  }, [isMenuOpen, isCartOpen, isSearchOpen, isFragranceGuideOpen, isCheckoutOpen, quickAddProduct]);
 
   // Cart operations
   const addToCart = (product, variantType = "bottle", sizeObj = null, quantity = 1) => {
@@ -198,6 +199,8 @@ export function StoreProvider({ children }) {
         setIsSearchOpen,
         isFragranceGuideOpen,
         setIsFragranceGuideOpen,
+        isCheckoutOpen,
+        setIsCheckoutOpen,
         quickAddProduct,
         setQuickAddProduct,
       }}

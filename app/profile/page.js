@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -71,12 +71,25 @@ export default function ProfilePage() {
   const router = useRouter();
   const { user, isLoading, logout } = useAuth();
   const { cart, wishlist } = useStore();
+  const [orderCount, setOrderCount] = useState(null);
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.replace("/login");
     }
   }, [user, isLoading, router]);
+
+  // Fetch real order count for logged-in user
+  useEffect(() => {
+    if (!user) return;
+    fetch("/api/storefront/orders/mine", {
+      headers: { "X-Requested-With": "snifftok-web" },
+      credentials: "include",
+    })
+      .then((r) => r.json())
+      .then((data) => setOrderCount(data.data?.length ?? 0))
+      .catch(() => setOrderCount(0));
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -135,9 +148,9 @@ export default function ProfilePage() {
                 transition={{ duration: 0.4, delay: 0.08 }}
                 className="grid grid-cols-3 gap-3"
               >
-                <StatCard label="In Bag"   value={cart.length}              icon={ShoppingBag} />
-                <StatCard label="Wishlist" value={wishlist.length}           icon={Heart} />
-                <StatCard label="Orders"   value={user.orders?.length || 0} icon={Package} />
+                <StatCard label="In Bag"   value={cart.length}     icon={ShoppingBag} />
+                <StatCard label="Wishlist" value={wishlist.length}  icon={Heart} />
+                <StatCard label="Orders"   value={orderCount ?? "—"} icon={Package} />
               </motion.div>
 
               {/* Fragrance CTA */}
@@ -180,7 +193,7 @@ export default function ProfilePage() {
                     label="My Orders"
                     description="Track and view past purchases"
                     icon={Package}
-                    href="#"
+                    href="/orders"
                   />
                   <MenuRow
                     label="My Wishlist"

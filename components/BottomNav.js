@@ -18,7 +18,7 @@ export default function BottomNav() {
   // Determine active tab from pathname
   const getActiveTab = () => {
     if (pathname === "/categories") return "categories";
-    if (pathname === "/profile" || pathname === "/wishlist") return "profile";
+    if (pathname === "/profile" || pathname === "/wishlist" || pathname === "/orders") return "profile";
     return "explore";
   };
 
