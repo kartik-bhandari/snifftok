@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Bookmark, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
+import { useSearchParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import Footer from "@/components/Footer";
 
@@ -36,14 +37,18 @@ export default function ProductDetailClient({ product, relatedProducts }) {
     const hasBottles = bottles.length > 0
     const hasTesters = testers.length > 0
 
+    // If user arrived via ?variant=decant (e.g. from Decants section), pre-select decant tab
+    const searchParams = useSearchParams()
+    const wantDecant = searchParams.get('variant') === 'decant' && hasTesters
+
     const [selectedVariantType, setSelectedVariantType] = useState(
-        hasBottles ? "bottle" : "tester"
+        wantDecant ? "tester" : (hasBottles ? "bottle" : "tester")
     )
 
     const availableSizes = selectedVariantType === 'bottle' ? bottles : testers
 
     const [selectedVariant, setSelectedVariant] = useState(() => {
-        const pool = hasBottles ? bottles : testers
+        const pool = wantDecant ? testers : (hasBottles ? bottles : testers)
         return pool.find(v => (v.stock ?? 0) > 0) ?? pool[0] ?? null
     })
 
@@ -96,16 +101,17 @@ export default function ProductDetailClient({ product, relatedProducts }) {
             {/* Main Container: Split-screen on lg+ screens */}
             <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-6">
                 {/* Breadcrumb */}
-                <div className="py-2.5 flex items-center gap-1.5 text-[11px] sm:text-[12px] text-[#8A8A8A] font-medium tracking-tight">
-                    <Link href="/" className="hover:text-[#0A0A0A] transition-colors">
+                <div className="py-2.5 flex items-center gap-1.5 text-[11px] sm:text-[12px] text-[#8A8A8A] font-medium tracking-tight overflow-hidden">
+                    <Link href="/" className="hover:text-[#0A0A0A] transition-colors shrink-0">
                         Home
                     </Link>
-                    <span className="text-[#A0A0A0]">&gt;</span>
-                    <span className="uppercase tracking-wider font-semibold text-[#666666]">
+                    {/* Category — hidden on mobile to keep breadcrumb single-line */}
+                    <span className="text-[#A0A0A0] shrink-0 hidden sm:inline">&gt;</span>
+                    <span className="uppercase tracking-wider font-semibold text-[#666666] truncate hidden sm:inline">
                         {product.categoryId?.name ?? product.category ?? "Fragrance"}
                     </span>
-                    <span className="text-[#A0A0A0]">&gt;</span>
-                    <span className="text-[#0A0A0A] capitalize truncate">
+                    <span className="text-[#A0A0A0] shrink-0">&gt;</span>
+                    <span className="text-[#0A0A0A] capitalize truncate min-w-0">
                         {product.name}
                     </span>
                 </div>
@@ -229,7 +235,7 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                                                     : "text-[#8A8A8A] hover:text-[#0A0A0A]"
                                                 }`}
                                         >
-                                            Tester
+                                            Decant
                                         </button>
                                     )}
                                 </div>
@@ -262,12 +268,12 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                                 </div>
                             </div>
 
-                            {/* Tester Promo Info Line */}
+                            {/* Decant Promo Info Line */}
                             {selectedVariantType === "tester" && (
                                 <div className="bg-[#F6F8FB] border border-[#E3EDFD] rounded-[14px] p-3 flex items-center gap-2.5">
                                     <Sparkles className="w-4 h-4 text-[#2F80FF] shrink-0" />
                                     <p className="text-[12px] sm:text-[13px] text-[#0A0A0A] leading-tight">
-                                        Buy 5 or more testers and get discounted shipping.
+                                        Buy 5 or more decants and get discounted shipping.
                                     </p>
                                 </div>
                             )}
@@ -411,7 +417,7 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                                         <div className="bg-white/60 p-3 rounded-[12px] text-[12px] text-[#555555] mt-2">
                                             <p className="font-medium text-[#0A0A0A]">Standard Shipping Rates:</p>
                                             <p>• Bottles: ₹80 each</p>
-                                            <p>• Testers: ₹80 per bundle of 5</p>
+                                            <p>• Decants: ₹80 per bundle of 5</p>
                                         </div>
                                     </div>
                                 )}

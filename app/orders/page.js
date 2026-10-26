@@ -72,7 +72,7 @@ function OrderCard({ order, onClick }) {
         {order.items.slice(0, 2).map((item, i) => (
           <p key={i} className="text-[12px] text-[#555] capitalize">
             {item.name}
-            <span className="text-[#8A8A8A]"> · {item.variantType} {item.sizeMl}ml × {item.quantity}</span>
+            <span className="text-[#8A8A8A]"> · {item.variantType === 'tester' ? 'Decant' : 'Bottle'} {item.sizeMl}ml × {item.quantity}</span>
           </p>
         ))}
         {order.items.length > 2 && (
@@ -160,7 +160,7 @@ function OrderDetail({ order, onBack }) {
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-semibold text-[#0A0A0A] capitalize">{item.name}</p>
                 <p className="text-[11px] text-[#8A8A8A] capitalize mt-0.5">
-                  {item.variantType} · {item.sizeMl}ml × {item.quantity}
+                  {item.variantType === 'tester' ? 'Decant' : 'Bottle'} · {item.sizeMl}ml × {item.quantity}
                   {item.brand && ` · ${item.brand}`}
                 </p>
               </div>

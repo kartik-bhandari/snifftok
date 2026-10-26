@@ -94,7 +94,7 @@ export default function QuickAddSheet() {
             </button>
           </div>
 
-          {/* Bottle vs Tester Toggle */}
+          {/* Bottle vs Decant Toggle */}
           <div className="py-4">
             <div className="flex bg-[#F5F5F5] p-1 rounded-full w-full">
               {["bottle", "tester"].map((type) => {
@@ -103,11 +103,11 @@ export default function QuickAddSheet() {
                   <button
                     key={type}
                     onClick={() => handleVariantSwitch(type)}
-                    className={`flex-1 py-1.5 sm:py-2 text-[12px] sm:text-[13px] font-semibold capitalize rounded-full transition-all ${
+                    className={`flex-1 py-1.5 sm:py-2 text-[12px] sm:text-[13px] font-semibold rounded-full transition-all ${
                       isActive ? "bg-white text-[#0A0A0A] shadow-xs" : "text-[#8A8A8A] hover:text-[#0A0A0A]"
                     }`}
                   >
-                    {type}
+                    {type === "tester" ? "Decant" : "Bottle"}
                   </button>
                 );
               })}

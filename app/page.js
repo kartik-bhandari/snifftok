@@ -78,13 +78,14 @@ export default async function HomePage() {
         />
       )}
 
-      {/* 4. Testers & Samples */}
+      {/* 4. Decants */}
       {displayTest.length > 0 && (
         <FeatureSection
           id="testers"
-          title="Testers & Samples"
+          title="Decants"
           products={displayTest}
           discoverHref="/categories"
+          preferDecant={true}
         />
       )}
 
@@ -99,7 +100,6 @@ export default async function HomePage() {
         </div>
       )}
 
-      <div className="h-44 sm:h-28 md:h-12 w-full" />
       <Footer />
     </div>
   );

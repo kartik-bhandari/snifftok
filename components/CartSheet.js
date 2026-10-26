@@ -61,18 +61,18 @@ export default function CartSheet() {
               </button>
             </div>
 
-            {/* Tester Discount Promo Banner (Prompt Requirement) */}
+            {/* Decant Discount Promo Banner */}
             {shippingInfo.testersCount > 0 && (
               <div className="bg-[#F8F9FA] px-4 py-2.5 border-b border-[#EAEAEA] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#2F80FF] shrink-0" />
                 <span className="text-[12px] text-[#0A0A0A] leading-tight">
                   {shippingInfo.isTesterDiscountEligible ? (
                     <span className="font-medium text-emerald-600">
-                      Tester bundle applied: Flat ₹80 shipping per 5 testers!
+                      Decant bundle applied: Flat ₹80 shipping per 5 decants!
                     </span>
                   ) : (
                     <span>
-                      Add <strong>{shippingInfo.testersNeededForNextBundle} more tester</strong> to maximize bundle shipping savings!
+                      Add <strong>{shippingInfo.testersNeededForNextBundle} more decant</strong> to maximize bundle shipping savings!
                     </span>
                   )}
                 </span>
@@ -88,7 +88,7 @@ export default function CartSheet() {
                   </div>
                   <h3 className="text-[16px] font-bold text-[#0A0A0A]">Your bag is empty</h3>
                   <p className="text-[13px] text-[#8A8A8A] mt-1 max-w-[240px]">
-                    Discover artisanal extraits or sample iconic fragrances with our discovery testers.
+                    Discover artisanal extraits or sample iconic fragrances with our discovery decants.
                   </p>
                   <button
                     onClick={() => setIsCartOpen(false)}
@@ -132,7 +132,7 @@ export default function CartSheet() {
                         </div>
 
                         <div className="text-[12px] text-[#8A8A8A] mt-0.5 flex items-center gap-1.5">
-                          <span className="capitalize">{item.variantType}</span>
+                          <span className="capitalize">{item.variantType === "tester" ? "Decant" : item.variantType}</span>
                           <span>•</span>
                           <span>{item.ml}</span>
                         </div>
@@ -185,7 +185,7 @@ export default function CartSheet() {
                       <span className="text-[11px] text-[#A0A0A0]">
                         ({shippingInfo.bottlesCount > 0 ? `${shippingInfo.bottlesCount} bottles` : ""}
                         {shippingInfo.bottlesCount > 0 && shippingInfo.testersCount > 0 ? " + " : ""}
-                        {shippingInfo.testersCount > 0 ? `${shippingInfo.testersCount} testers` : ""})
+                        {shippingInfo.testersCount > 0 ? `${shippingInfo.testersCount} decants` : ""})
                       </span>
                     </span>
                     <span className="text-[#0A0A0A] font-medium">

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Plus, Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 
-export default function FeatureSection({ title, products, discoverHref = "#", id }) {
+export default function FeatureSection({ title, products, discoverHref = "#", id, preferDecant = false }) {
   const { isInWishlist, toggleWishlist } = useStore();
 
   const scrollRef = useRef(null);
@@ -63,14 +63,20 @@ export default function FeatureSection({ title, products, discoverHref = "#", id
           {products.map((product) => {
             const isWishlisted = isInWishlist(product.slug);
 
-            // Images: API returns [{url, publicId, ...}] — extract .url
+            // Images: use the shared decant vial photo for decant cards so the
+            // bottle photo isn't shown misleadingly; use product photo otherwise.
             const rawImg = product.images?.[0];
-            const image = (typeof rawImg === "string" ? rawImg : rawImg?.url) || "/images/products/santal.png";
+            const productImage = (typeof rawImg === "string" ? rawImg : rawImg?.url) || "/images/products/santal.png";
+            const image = preferDecant ? "/images/decant-placeholder.png" : productImage;
             const isExternal = image.startsWith("http");
 
-            // Price: API returns paise in variants[].pricing.unitPriceExclDelivery
+            // Price: prefer tester if preferDecant, else prefer bottle
             const vars = product.variants ?? [];
-            const pick = vars.find((v) => v.type === "bottle") ?? vars[0];
+            const decants = vars.filter((v) => v.type === "tester");
+            const bottles = vars.filter((v) => v.type === "bottle");
+            const pick = preferDecant
+              ? (decants[0] ?? bottles[0] ?? vars[0])
+              : (bottles[0] ?? decants[0] ?? vars[0]);
             const price = pick?.pricing?.unitPriceExclDelivery
               ? `₹${Math.round(pick.pricing.unitPriceExclDelivery / 100).toLocaleString("en-IN")}`
               : (product.variants?.bottle?.sizes?.[0]?.price ?? "Price on request");
@@ -82,7 +88,7 @@ export default function FeatureSection({ title, products, discoverHref = "#", id
               >
                 {/* Card Image */}
                 <div className="relative aspect-[4/5] w-full rounded-[16px] sm:rounded-[18px] overflow-hidden bg-[#F0F0F0] shadow-xs group-hover:shadow-md transition-shadow">
-                  <Link href={`/product/${product.slug}`} className="block w-full h-full relative">
+                  <Link href={`/product/${product.slug}${preferDecant ? "?variant=decant" : ""}`} className="block w-full h-full relative">
                     <Image
                       src={image}
                       alt={product.name}
@@ -92,6 +98,15 @@ export default function FeatureSection({ title, products, discoverHref = "#", id
                       className="object-cover object-center group-hover:scale-104 transition-transform duration-500 ease-out"
                     />
                   </Link>
+
+                  {/* Decant badge — shown only in the decants section */}
+                  {preferDecant && (
+                    <div className="absolute bottom-2.5 left-2.5 z-10">
+                      <span className="inline-flex items-center gap-1 bg-black/70 backdrop-blur-sm text-white text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        Decant
+                      </span>
+                    </div>
+                  )}
 
                   <button
                     onClick={(e) => {
@@ -114,13 +129,13 @@ export default function FeatureSection({ title, products, discoverHref = "#", id
                 <div className="pt-2.5 flex items-start justify-between gap-1.5">
                   <div className="flex flex-col min-w-0 pr-1">
                     <Link
-                      href={`/product/${product.slug}`}
+                      href={`/product/${product.slug}${preferDecant ? "?variant=decant" : ""}`}
                       className="text-[12px] sm:text-[13.5px] font-medium text-[#0A0A0A] truncate capitalize hover:underline"
                     >
                       {product.name}
                     </Link>
                     <span className="text-[11px] sm:text-[12.5px] text-[#8A8A8A] font-normal tracking-tight mt-0.5">
-                      {price}
+                      {preferDecant ? "from " : ""}{price}
                     </span>
                   </div>
 

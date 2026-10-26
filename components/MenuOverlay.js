@@ -109,7 +109,7 @@ export default function MenuOverlay() {
                 { name: "New Arrivals", href: "/#new-arrivals" },
                 { name: "Best Sellers", href: "/#best-sellers" },
                 { name: "Trending", href: "/#new-arrivals" },
-                { name: "Testers", href: "/#testers" },
+                { name: "Decants", href: "/#testers" },
               ].map((item) => (
                 <button
                   key={item.name}
