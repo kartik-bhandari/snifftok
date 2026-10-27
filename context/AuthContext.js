@@ -121,6 +121,40 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  /**
+   * Step 1 of OTP login — request a 6-digit code to be emailed.
+   * Always resolves (server never reveals if the email exists).
+   */
+  const sendOtp = async ({ email }) => {
+    const res  = await fetch(`${AUTH}/otp/send`, {
+      method: "POST",
+      credentials: "include",
+      headers: BASE_HEADERS,
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to send code.");
+    return data;
+  };
+
+  /**
+   * Step 2 of OTP login — submit the code.
+   * `name` is only required when creating a brand-new account.
+   * Returns { user, isNew }
+   */
+  const verifyOtp = async ({ email, code, name }) => {
+    const res  = await fetch(`${AUTH}/otp/verify`, {
+      method: "POST",
+      credentials: "include",
+      headers: BASE_HEADERS,
+      body: JSON.stringify({ email, code, name }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Verification failed.");
+    if (data.user) setUser(data.user);
+    return data;
+  };
+
   const logout = async () => {
     try {
       await fetch(`${AUTH}/logout`, {
@@ -160,6 +194,8 @@ export function AuthProvider({ children }) {
         login,
         verify2fa,
         setup2fa,
+        sendOtp,
+        verifyOtp,
         logout,
         handlePostLogin,
         refetch: fetchMe,
