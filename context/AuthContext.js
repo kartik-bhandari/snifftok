@@ -123,7 +123,8 @@ export function AuthProvider({ children }) {
 
   /**
    * Step 1 of OTP login — request a 6-digit code to be emailed.
-   * Always resolves (server never reveals if the email exists).
+   * Returns { ok, useAdminPanel? } — useAdminPanel means the email is a
+   * staff/admin account: no code was sent, they must use the admin panel.
    */
   const sendOtp = async ({ email }) => {
     const res  = await fetch(`${AUTH}/otp/send`, {
@@ -173,10 +174,12 @@ export function AuthProvider({ children }) {
    * Admin/Staff → admin panel (hard navigate — different origin)
    * Customer    → /account or returnTo path (same-origin only, no open redirect)
    */
+  /** Hard redirect to admin panel — cannot use Next.js router (different origin) */
+  const redirectToAdmin = () => window.location.assign(ADMIN_URL);
+
   const handlePostLogin = (user, returnTo) => {
     if (user.role === "admin" || user.role === "staff") {
-      // Hard redirect to admin panel — cannot use Next.js router here
-      window.location.assign(ADMIN_URL);
+      redirectToAdmin();
       return;
     }
     // Customers stay on the storefront
@@ -198,6 +201,7 @@ export function AuthProvider({ children }) {
         verifyOtp,
         logout,
         handlePostLogin,
+        redirectToAdmin,
         refetch: fetchMe,
       }}
     >

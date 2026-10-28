@@ -17,10 +17,11 @@ const slide = {
 
 // ─── Step 1: Email input ──────────────────────────────────────────────────────
 function StepEmail({ onNext }) {
-  const { sendOtp } = useAuth();
+  const { sendOtp, redirectToAdmin } = useAuth();
   const [email, setEmail]     = useState("");
   const [error, setError]     = useState("");
   const [loading, setLoading] = useState(false);
+  const [toAdmin, setToAdmin] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +29,13 @@ function StepEmail({ onNext }) {
     setError("");
     setLoading(true);
     try {
-      await sendOtp({ email: email.trim().toLowerCase() });
+      const result = await sendOtp({ email: email.trim().toLowerCase() });
+      if (result.useAdminPanel) {
+        // Staff/admin account — no code was sent; brief notice, then admin login
+        setToAdmin(true);
+        setTimeout(redirectToAdmin, 1500);
+        return;
+      }
       onNext(email.trim().toLowerCase());
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
@@ -58,6 +65,16 @@ function StepEmail({ onNext }) {
             </motion.div>
           )}
 
+          {toAdmin && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-2 bg-[#F5F5F5] border border-[#E8E8E8] text-[#0A0A0A] text-xs px-3 py-2.5 rounded-xl"
+            >
+              <span className="w-3.5 h-3.5 shrink-0 border-2 border-[#0A0A0A]/20 border-t-[#0A0A0A] rounded-full animate-spin" />
+              This is a staff account. Taking you to the admin login…
+            </motion.div>
+          )}
+
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8A8A8A] pointer-events-none" />
             <input
@@ -76,10 +93,10 @@ function StepEmail({ onNext }) {
           <button
             id="send-otp-btn"
             type="submit"
-            disabled={loading}
+            disabled={loading || toAdmin}
             className="w-full bg-[#0A0A0A] text-white text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-[#222] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading
+            {loading || toAdmin
               ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               : <><span>Send code</span><ArrowRight className="w-4 h-4" /></>
             }
