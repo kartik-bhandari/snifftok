@@ -75,6 +75,7 @@ export default function ProductDetailClient({ product, relatedProducts }) {
         const paise = selectedVariant.pricing?.unitPriceExclDelivery ?? 0
         const sizeObj = {
             ml: `${selectedVariant.sizeMl}ml`,
+            sku: selectedVariant.sku,   // lets the API look up cost for profit reporting
             price: formatPaise(paise),
             priceRaw: Math.round(paise / 100),   // rupees integer for calculations
             inStock: true,
@@ -87,6 +88,7 @@ export default function ProductDetailClient({ product, relatedProducts }) {
         const paise = selectedVariant.pricing?.unitPriceExclDelivery ?? 0
         const sizeObj = {
             ml: `${selectedVariant.sizeMl}ml`,
+            sku: selectedVariant.sku,
             price: formatPaise(paise),
             priceRaw: Math.round(paise / 100),
             inStock: true,

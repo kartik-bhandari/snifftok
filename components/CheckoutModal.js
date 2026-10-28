@@ -76,10 +76,10 @@ export default function CheckoutModal() {
     try {
       // Build payload — prices in paise
       const items = cart.map((item) => ({
-        productId:   item.id ?? item._id,
+        productId:   item.productId ?? item.id ?? item._id,
         name:        item.name,
         brand:       item.brand ?? "",
-        sku:         item.sku ?? "",
+        sku:         item.sku ?? undefined,   // older carts have none — API falls back to product + size
         variantType: item.variantType ?? "bottle",
         sizeMl:      parseInt(item.ml) || 0,
         image:       item.image ?? "",

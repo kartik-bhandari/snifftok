@@ -110,6 +110,7 @@ export function StoreProvider({ children }) {
           name: product.name,
           brand: product.brand,
           variantType,
+          sku: selectedSize.sku,
           ml: selectedSize.ml,
           price: selectedSize.price,
           priceRaw: selectedSize.priceRaw,
