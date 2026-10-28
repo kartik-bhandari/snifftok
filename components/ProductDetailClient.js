@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Bookmark, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
@@ -37,18 +37,16 @@ export default function ProductDetailClient({ product, relatedProducts }) {
     const hasBottles = bottles.length > 0
     const hasTesters = testers.length > 0
 
-    // If user arrived via ?variant=decant (e.g. from Decants section), pre-select decant tab
-    const searchParams = useSearchParams()
-    const wantDecant = searchParams.get('variant') === 'decant' && hasTesters
-
+    // ?variant=decant (e.g. from the Decants section) is applied by <DecantFromUrl>
+    // after hydration, so the rest of the page can still be prerendered.
     const [selectedVariantType, setSelectedVariantType] = useState(
-        wantDecant ? "tester" : (hasBottles ? "bottle" : "tester")
+        hasBottles ? "bottle" : "tester"
     )
 
     const availableSizes = selectedVariantType === 'bottle' ? bottles : testers
 
     const [selectedVariant, setSelectedVariant] = useState(() => {
-        const pool = wantDecant ? testers : (hasBottles ? bottles : testers)
+        const pool = hasBottles ? bottles : testers
         return pool.find(v => (v.stock ?? 0) > 0) ?? pool[0] ?? null
     })
 
@@ -98,6 +96,12 @@ export default function ProductDetailClient({ product, relatedProducts }) {
 
     return (
         <div className="flex flex-col w-full pt-16 sm:pt-20 select-none">
+            {/* useSearchParams must sit inside Suspense or the static build fails */}
+            {hasTesters && (
+                <Suspense fallback={null}>
+                    <DecantFromUrl onDecant={() => handleVariantChange("tester")} />
+                </Suspense>
+            )}
             {/* Main Container: Split-screen on lg+ screens */}
             <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-6">
                 {/* Breadcrumb */}
@@ -443,4 +447,14 @@ export default function ProductDetailClient({ product, relatedProducts }) {
             <Footer />
         </div>
     );
+}
+
+/** Switches to the decant tab when the URL has ?variant=decant. Renders nothing. */
+function DecantFromUrl({ onDecant }) {
+    const wantDecant = useSearchParams().get('variant') === 'decant'
+    useEffect(() => {
+        if (wantDecant) onDecant()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [wantDecant])
+    return null
 }
