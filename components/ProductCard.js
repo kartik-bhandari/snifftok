@@ -6,8 +6,10 @@ import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 
-export default function ProductCard({ product }) {
+/** preferDecant: link opens the product on its Decant tab (used by the Decants listing) */
+export default function ProductCard({ product, preferDecant = false }) {
   const { isInWishlist, toggleWishlist } = useStore();
+  const href = `/product/${product.slug}${preferDecant ? "?variant=decant" : ""}`;
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -73,7 +75,7 @@ export default function ProductCard({ product }) {
     >
       {/* 4:5 Portrait Image Container with 16px radius */}
       <div className="relative aspect-[4/5] w-full rounded-[16px] sm:rounded-[18px] overflow-hidden bg-[#E2E2E2] shadow-xs group-hover:shadow-md transition-shadow">
-        <Link href={`/product/${product.slug}`} className="block w-full h-full relative">
+        <Link href={href} className="block w-full h-full relative">
           <Image
             src={displayedImage}
             alt={product.name}
@@ -120,7 +122,7 @@ export default function ProductCard({ product }) {
       {/* Info Row: Name & Price */}
       <div className="pt-2.5 sm:pt-3 px-0.5">
         <Link
-          href={`/product/${product.slug}`}
+          href={href}
           className="text-[13px] sm:text-[14px] font-medium leading-snug text-[#0A0A0A] truncate capitalize hover:underline underline-offset-2 block"
         >
           {product.name}
