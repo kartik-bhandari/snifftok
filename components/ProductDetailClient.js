@@ -9,6 +9,8 @@ import { useStore } from "@/context/StoreContext";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import Footer from "@/components/Footer";
+import { SCENT_THEMES } from "@/lib/scentThemes";
+import { OutOfStockBanner } from "@/components/WhatsAppRequestBanner";
 
 export default function ProductDetailClient({ product, relatedProducts }) {
     const {
@@ -113,9 +115,19 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                     </Link>
                     {/* Category — hidden on mobile to keep breadcrumb single-line */}
                     <span className="text-[#A0A0A0] shrink-0 hidden sm:inline">&gt;</span>
-                    <span className="uppercase tracking-wider font-semibold text-[#666666] truncate hidden sm:inline">
-                        {product.categoryId?.name ?? product.category ?? "Fragrance"}
-                    </span>
+                    {SCENT_THEMES[product.categoryId?.slug] ? (
+                        // One of the 5 scent families — link to its listing
+                        <Link
+                            href={`/categories/${product.categoryId.slug}`}
+                            className="uppercase tracking-wider font-semibold text-[#666666] hover:text-[#0A0A0A] transition-colors truncate hidden sm:inline"
+                        >
+                            {product.categoryId.name}
+                        </Link>
+                    ) : (
+                        <span className="uppercase tracking-wider font-semibold text-[#666666] truncate hidden sm:inline">
+                            {product.categoryId?.name ?? product.category ?? "Fragrance"}
+                        </span>
+                    )}
                     <span className="text-[#A0A0A0] shrink-0">&gt;</span>
                     <span className="text-[#0A0A0A] capitalize truncate min-w-0">
                         {product.name}
@@ -305,6 +317,20 @@ export default function ProductDetailClient({ product, relatedProducts }) {
                                 >
                                     Buy Now
                                 </button>
+
+                                {/* Out of stock — ask on WhatsApp, pre-filled with product + size */}
+                                {!isInStock && (
+                                    <OutOfStockBanner
+                                        className="mt-1"
+                                        productName={product.name}
+                                        variantLabel={selectedVariant
+                                            ? `${selectedVariant.sizeMl}ml ${selectedVariant.type === "tester" ? "decant" : "bottle"}`
+                                            : null}
+                                        otherSizesInStock={(product.variants ?? []).some(
+                                            (v) => v.sku !== selectedVariant?.sku && (v.stock ?? 0) > 0
+                                        )}
+                                    />
+                                )}
 
                                 {/* Fragrance Guide — subtle link below action buttons */}
                                 <button

@@ -48,21 +48,6 @@ export default function MenuOverlay() {
 
   const accordionItems = [
     {
-      id: "brand",
-      label: "Shop by Brand",
-      items: ["snifftok Atelier", "snifftok Reserve", "snifftok Discovery", "Collaborations"],
-    },
-    {
-      id: "notes",
-      label: "Shop by Notes",
-      items: ["Oud", "Musk", "Amber", "Floral", "Fresh"],
-    },
-    {
-      id: "gender",
-      label: "Shop by Gender",
-      items: ["Gender Neutral / Unisex", "Masculine Leaning", "Feminine Leaning"],
-    },
-    {
       id: "support",
       label: "Support",
       items: ["Track Your Order", "Fragrance Concierge (WhatsApp)", "Shipping & Returns Policy", "FAQ"],
