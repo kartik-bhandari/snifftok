@@ -1,306 +1,121 @@
-"use client";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { fetchCategories } from "@/lib/categories";
+import { themeFor, GRAIN } from "@/lib/scentThemes";
 
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import {
-  Sun, Moon, Coffee, Waves, Wind, Flame, Leaf,
-  Sparkles, Cloud, Snowflake, FlowerIcon, Star, Gift,
-  Heart, TreePine, ChevronRight,
-} from "lucide-react";
+export const metadata = {
+  title: "Scent Families | snifftok",
+  description: "Shop fragrances by scent family — Floral, Amber, Woody, Fresh and Gourmand.",
+};
 
-// ─── Data ──────────────────────────────────────────────────────────────────────
-const SECTIONS = [
-  {
-    id: "occasion",
-    label: "Occasion",
-    categories: [
-      {
-        id: "date-night",
-        name: "Date Night",
-        tagline: "Magnetic & Alluring",
-        gradient: "from-rose-950 via-rose-800 to-pink-700",
-        icon: Heart,
-        tags: ["Vanilla", "Amber", "Rose"],
-      },
-      {
-        id: "morning",
-        name: "Morning Ritual",
-        tagline: "Fresh & Invigorating",
-        gradient: "from-amber-500 via-orange-400 to-yellow-300",
-        icon: Sun,
-        tags: ["Bergamot", "Green Tea", "Citrus"],
-      },
-      {
-        id: "office",
-        name: "Office Wear",
-        tagline: "Clean & Professional",
-        gradient: "from-slate-700 via-slate-600 to-slate-400",
-        icon: Coffee,
-        tags: ["White Musk", "Cedar", "Vetiver"],
-      },
-      {
-        id: "evening-out",
-        name: "Evening Out",
-        tagline: "Bold & Commanding",
-        gradient: "from-violet-950 via-purple-800 to-indigo-700",
-        icon: Moon,
-        tags: ["Oud", "Spice", "Tonka"],
-      },
-      {
-        id: "casual",
-        name: "Casual Everyday",
-        tagline: "Effortless & Easy",
-        gradient: "from-sky-600 via-cyan-500 to-teal-400",
-        icon: Wind,
-        tags: ["Aquatic", "Sandalwood", "Floral"],
-      },
-      {
-        id: "beach",
-        name: "Beach & Vacation",
-        tagline: "Tropical & Carefree",
-        gradient: "from-cyan-500 via-blue-400 to-teal-300",
-        icon: Waves,
-        tags: ["Sea Salt", "Coconut", "Frangipani"],
-      },
-      {
-        id: "festive",
-        name: "Festive & Celebrations",
-        tagline: "Opulent & Grand",
-        gradient: "from-amber-800 via-yellow-600 to-amber-400",
-        icon: Sparkles,
-        tags: ["Saffron", "Tuberose", "Frankincense"],
-      },
-      {
-        id: "gifting",
-        name: "Gifts & Discovery",
-        tagline: "Thoughtful & Curated",
-        gradient: "from-pink-700 via-fuchsia-600 to-purple-500",
-        icon: Gift,
-        tags: ["Sampler Sets", "Gift Boxes", "Discovery Kits"],
-      },
-    ],
-  },
-  {
-    id: "seasonal",
-    label: "Season",
-    categories: [
-      {
-        id: "summer",
-        name: "Summer",
-        tagline: "Cooling & Sparkling",
-        gradient: "from-orange-400 via-yellow-300 to-lime-300",
-        icon: Sun,
-        tags: ["Bergamot", "Aquatic", "Mandarin"],
-      },
-      {
-        id: "winter",
-        name: "Winter",
-        tagline: "Warm & Cocooning",
-        gradient: "from-blue-900 via-indigo-700 to-slate-600",
-        icon: Snowflake,
-        tags: ["Oud", "Vanilla", "Incense"],
-      },
-      {
-        id: "spring",
-        name: "Spring",
-        tagline: "Blooming & Optimistic",
-        gradient: "from-green-500 via-emerald-400 to-lime-300",
-        icon: FlowerIcon,
-        tags: ["Peony", "Green Notes", "Peach"],
-      },
-      {
-        id: "autumn",
-        name: "Autumn",
-        tagline: "Earthy & Transitional",
-        gradient: "from-orange-700 via-amber-600 to-yellow-500",
-        icon: Leaf,
-        tags: ["Cedarwood", "Amber", "Fig"],
-      },
-    ],
-  },
-  {
-    id: "scent-families",
-    label: "Scent Family",
-    categories: [
-      {
-        id: "floral",
-        name: "Floral",
-        tagline: "Rose · Jasmine · Tuberose",
-        gradient: "from-pink-600 via-rose-500 to-red-400",
-        icon: FlowerIcon,
-        tags: ["Rose", "Jasmine", "Tuberose"],
-      },
-      {
-        id: "woody",
-        name: "Woody & Earthy",
-        tagline: "Oud · Sandalwood · Vetiver",
-        gradient: "from-stone-700 via-amber-800 to-yellow-900",
-        icon: TreePine,
-        tags: ["Oud", "Sandalwood", "Vetiver"],
-      },
-      {
-        id: "fresh-citrus",
-        name: "Fresh & Citrus",
-        tagline: "Bergamot · Lime · Aquatic",
-        gradient: "from-lime-400 via-green-400 to-cyan-400",
-        icon: Cloud,
-        tags: ["Bergamot", "Lime", "Sea Spray"],
-      },
-      {
-        id: "oriental-amber",
-        name: "Oriental & Amber",
-        tagline: "Resinous · Warm · Spiced",
-        gradient: "from-red-900 via-orange-800 to-amber-600",
-        icon: Flame,
-        tags: ["Labdanum", "Spice", "Benzoin"],
-      },
-      {
-        id: "gourmand",
-        name: "Gourmand & Sweet",
-        tagline: "Vanilla · Caramel · Coffee",
-        gradient: "from-amber-700 via-yellow-600 to-orange-400",
-        icon: Star,
-        tags: ["Vanilla", "Tonka", "Coffee"],
-      },
-      {
-        id: "musk",
-        name: "Musk & Clean",
-        tagline: "Skin-like · Intimate · Pure",
-        gradient: "from-zinc-500 via-slate-400 to-gray-300",
-        icon: Sparkles,
-        tags: ["White Musk", "Ambrette", "Cotton"],
-      },
-    ],
-  },
-];
-
-// ─── Card ───────────────────────────────────────────────────────────────────────
-function CategoryCard({ cat, index }) {
-  const router = useRouter();
-  const Icon = cat.icon;
+export default async function CategoriesPage() {
+  const categories = await fetchCategories();
 
   return (
-    <motion.button
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.35, delay: index * 0.04 }}
-      onClick={() => router.push(`/?category=${cat.id}`)}
-      className="group relative w-full text-left overflow-hidden rounded-[20px] active:scale-[0.97] transition-transform duration-150"
-      style={{ aspectRatio: "1 / 1" }}
-      aria-label={`Browse ${cat.name} fragrances`}
-    >
-      {/* Gradient fill */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient}`} />
-
-      {/* Noise grain overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.15] mix-blend-overlay"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* Watermark icon */}
-      <div className="absolute -right-3 -bottom-3 opacity-[0.12]">
-        <Icon className="w-28 h-28 text-white stroke-[0.8]" />
+    <main className="min-h-screen bg-[#EFEFEF] pb-40 md:pb-16">
+      {/* ── Header ─────────────────────────────────────────────── */}
+      <div className="pt-24 md:pt-28 px-5 pb-8 max-w-5xl mx-auto">
+        <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#8A8A8A] mb-2">
+          Browse
+        </p>
+        <h1 className="font-wordmark text-[#0A0A0A] text-[32px] md:text-[44px] leading-[1.02]">
+          scent families
+        </h1>
+        <p className="text-[13px] md:text-[15px] text-[#666666] mt-2 max-w-md leading-relaxed">
+          Every fragrance belongs to one of five families. Pick the mood — we&apos;ll show you the bottles.
+        </p>
       </div>
 
-      {/* Shine sweep on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/0 via-white/0 to-white/0 group-hover:from-white/10 group-hover:via-white/5 group-hover:to-white/0 transition-all duration-500" />
-
-      {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-between p-4">
-        {/* Top: icon pill */}
-        <div className="flex items-start justify-between">
-          <div className="w-9 h-9 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-            <Icon className="w-[18px] h-[18px] text-white stroke-[2.2]" />
-          </div>
-          <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/35 transition-colors">
-            <ChevronRight className="w-3 h-3 text-white" />
-          </div>
-        </div>
-
-        {/* Bottom: name + tags */}
-        <div>
-          <p className="text-white/65 text-[11px] font-medium tracking-[0.05em] uppercase mb-1">
-            {cat.tagline}
+      {/* ── Families ───────────────────────────────────────────── */}
+      <div className="max-w-5xl mx-auto px-4">
+        {categories.length === 0 ? (
+          <p className="text-center text-sm text-[#8A8A8A] py-16">
+            Categories are unavailable right now. Please try again shortly.
           </p>
-          <h3 className="font-wordmark text-white text-base leading-tight mb-2.5">
-            {cat.name}
-          </h3>
-          <div className="flex gap-1.5 flex-wrap">
-            {cat.tags.slice(0, 2).map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] font-semibold text-white/85 bg-white/15 backdrop-blur-sm px-2 py-[3px] rounded-full tracking-wide"
-              >
-                {tag}
-              </span>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {categories.map((cat, i) => (
+              <FamilyCard
+                key={cat._id}
+                cat={cat}
+                // 5 cards in 2 columns — let the last one span the row
+                wide={categories.length % 2 === 1 && i === categories.length - 1}
+              />
             ))}
           </div>
-        </div>
+        )}
       </div>
-    </motion.button>
+    </main>
   );
 }
 
-// ─── Page ───────────────────────────────────────────────────────────────────────
-export default function CategoriesPage() {
+function FamilyCard({ cat, wide }) {
+  const { icon: Icon, gradient } = themeFor(cat.slug);
+
   return (
-    <>
-      <title>Categories — snifftok | Fragrances by Occasion, Season & Scent</title>
+    <Link
+      href={`/categories/${cat.slug}`}
+      aria-label={`Browse ${cat.name} fragrances`}
+      className={`group relative overflow-hidden rounded-[24px] min-h-[260px] md:min-h-[300px] flex flex-col p-5 md:p-6 text-white shadow-sm active:scale-[0.985] transition-transform duration-150 ${wide ? "md:col-span-2" : ""}`}
+    >
+      {/* Colour + grain */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+      <div className="absolute inset-0 opacity-[0.14] mix-blend-overlay" style={{ backgroundImage: GRAIN }} />
+      <div className="absolute inset-0 bg-white/0 group-hover:bg-white/[0.06] transition-colors duration-300" />
 
-      <main className="min-h-screen bg-[#EFEFEF] pb-40 md:pb-16">
+      {/* Watermark icon */}
+      <Icon className="absolute -right-6 -bottom-6 w-44 h-44 md:w-56 md:h-56 text-white opacity-[0.10] stroke-[0.7] transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-3" />
 
-        {/* ── Page Header ──────────────────────────────────────────── */}
-        <div className="pt-24 md:pt-28 px-5 pb-8 max-w-2xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+      <div className="relative z-10 flex flex-col h-full">
+        {/* Top row */}
+        <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+          <Icon className="w-5 h-5 text-white stroke-[2]" />
+        </div>
+
+        {/* Name + description */}
+        <div className="mt-6">
+          {/* Always takes a line so titles line up across cards in a row */}
+          <p
+            className={`text-[10px] font-semibold tracking-[0.14em] uppercase text-white/60 mb-1 ${cat.aka ? "" : "invisible"}`}
+            aria-hidden={!cat.aka}
           >
-            <p className="text-[11px] font-semibold tracking-[0.16em] uppercase text-[#8A8A8A] mb-2">
-              Browse
+            {cat.aka || " "}
+          </p>
+          <h2 className="font-wordmark text-[34px] md:text-[40px] leading-none">{cat.name}</h2>
+          {cat.smellsLike && (
+            <p className="text-[13px] md:text-[14px] text-white/85 mt-2 max-w-sm leading-snug">
+              {cat.smellsLike}
             </p>
-            <h1 className="font-wordmark text-[#0A0A0A] text-[28px] leading-[1.05]">
-              all categories
-            </h1>
-          </motion.div>
+          )}
         </div>
 
-        {/* ── Sections ─────────────────────────────────────────────── */}
-        <div className="max-w-2xl mx-auto px-4 space-y-10 pb-4">
-          {SECTIONS.map((section, si) => (
-            <section key={section.id} aria-labelledby={`sec-${section.id}`}>
-
-              {/* Section label — minimal pill */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: si * 0.05 }}
-                className="flex items-center gap-3 mb-4"
+        {/* Notes */}
+        {cat.notes?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-4">
+            {cat.notes.slice(0, 5).map((note) => (
+              <span
+                key={note}
+                className="text-[11px] font-medium text-white/90 bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full"
               >
-                <span
-                  id={`sec-${section.id}`}
-                  className="text-[11px] font-semibold tracking-[0.12em] uppercase text-[#8A8A8A]"
-                >
-                  {section.label}
-                </span>
-                <div className="flex-1 h-px bg-[#0A0A0A]/8" />
-              </motion.div>
+                {note}
+              </span>
+            ))}
+          </div>
+        )}
 
-              {/* Grid — square cards */}
-              <div className="grid grid-cols-2 gap-3">
-                {section.categories.map((cat, i) => (
-                  <CategoryCard key={cat.id} cat={cat} index={i} />
-                ))}
-              </div>
-            </section>
-          ))}
+        {/* Footer */}
+        <div className="mt-auto pt-5 flex items-end justify-between gap-4">
+          {cat.bestFor && (
+            <p className="text-[11px] text-white/70 leading-snug max-w-[70%]">
+              <span className="font-semibold text-white/85">Best for </span>
+              {cat.bestFor.charAt(0).toLowerCase() + cat.bestFor.slice(1)}
+            </p>
+          )}
+          <span className="ml-auto shrink-0 w-10 h-10 rounded-full bg-white text-[#0A0A0A] flex items-center justify-center transition-transform duration-200 group-hover:translate-x-0.5">
+            <ArrowRight className="w-4 h-4" />
+          </span>
         </div>
-      </main>
-    </>
+      </div>
+    </Link>
   );
 }
