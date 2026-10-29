@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { whatsappUrl } from "@/lib/whatsapp";
 import { MessageCircle, ArrowRight, Check } from "lucide-react";
 
 export default function Footer() {
@@ -20,7 +21,7 @@ export default function Footer() {
     <footer id="store-footer" className="mt-24 sm:mt-28 md:mt-20 pt-12 sm:pt-16 pb-44 md:pb-16 px-4 sm:px-6 lg:px-8 border-t border-[#DFDFDF] select-none scroll-mt-[72px] sm:scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         {/* Top 4-Column Grid on Desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-[#E2E2E2]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#E2E2E2]">
           {/* Brand Info & Newsletter (2 cols on lg) */}
           <div className="lg:col-span-2 flex flex-col gap-4">
             <span className="font-wordmark text-[26px] sm:text-[30px] text-[#0A0A0A] tracking-tight">
@@ -81,32 +82,13 @@ export default function Footer() {
             </Link>
           </div>
 
-          {/* Links Column 2: Olfactive Notes */}
-          <div className="flex flex-col gap-3 text-[13.5px]">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#0A0A0A]">
-              Olfactive Notes
-            </span>
-            <Link href="/#new-arrivals" className="text-[#8A8A8A] hover:text-[#0A0A0A] transition-colors">
-              Cambodi Oud
-            </Link>
-            <Link href="/#new-arrivals" className="text-[#8A8A8A] hover:text-[#0A0A0A] transition-colors">
-              White Musk & Cotton
-            </Link>
-            <Link href="/#new-arrivals" className="text-[#8A8A8A] hover:text-[#0A0A0A] transition-colors">
-              Smoked Amber Resins
-            </Link>
-            <Link href="/#new-arrivals" className="text-[#8A8A8A] hover:text-[#0A0A0A] transition-colors">
-              White Florals
-            </Link>
-          </div>
-
-          {/* Links Column 3: Concierge */}
+          {/* Links Column 2: Concierge */}
           <div className="flex flex-col gap-3 text-[13.5px]">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-[#0A0A0A]">
               Concierge
             </span>
             <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919876543210"}`}
+              href={whatsappUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#8A8A8A] hover:text-[#0A0A0A] transition-colors"
@@ -158,7 +140,7 @@ export default function Footer() {
 
             {/* WhatsApp */}
             <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919876543210"}`}
+              href={whatsappUrl()}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp Concierge"

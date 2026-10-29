@@ -7,6 +7,6 @@ services:
     startCommand: npm run start
     envVars:
       - key: NEXT_PUBLIC_WHATSAPP_NUMBER
-        value: "919876543210"
+        value: "918898513239"
       - key: NODE_VERSION
         value: "20"

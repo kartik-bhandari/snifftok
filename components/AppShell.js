@@ -5,6 +5,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { StoreProvider } from "@/context/StoreContext";
 import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
+import ChatButton from "@/components/ChatButton";
 import MenuOverlay from "@/components/MenuOverlay";
 import CartSheet from "@/components/CartSheet";
 import SearchOverlay from "@/components/SearchOverlay";
@@ -23,7 +24,8 @@ export default function AppShell({ children }) {
           <main className="flex-1 w-full flex flex-col">{children}</main>
 
           {/* Floating UI Elements */}
-          <BottomNav />
+          <BottomNav />   {/* mobile — includes the WhatsApp button */}
+          <ChatButton />  {/* desktop WhatsApp button */}
 
           {/* Global Drawers & Overlays */}
           <MenuOverlay />

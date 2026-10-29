@@ -5,19 +5,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { Compass, User, Search, LayoutGrid, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
+import { whatsappUrl as waLink, WHATSAPP_MESSAGES } from "@/lib/whatsapp";
 
 export default function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { setIsSearchOpen } = useStore();
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919876543210";
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    "Hello snifftok, I would like to inquire about fragrance recommendations."
-  )}`;
+  const whatsappUrl = waLink(WHATSAPP_MESSAGES.general);
 
   // Determine active tab from pathname
   const getActiveTab = () => {
-    if (pathname === "/categories") return "categories";
+    if (pathname === "/categories" || pathname.startsWith("/categories/")) return "categories";
     if (pathname === "/profile" || pathname === "/wishlist" || pathname === "/orders") return "profile";
     return "explore";
   };

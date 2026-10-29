@@ -10,6 +10,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { whatsappUrl } from "@/lib/whatsapp";
 import Footer from "@/components/Footer";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -198,7 +199,7 @@ function OrderDetail({ order, onBack }) {
       {/* Help */}
       <p className="text-[12px] text-center text-[#8A8A8A] px-4">
         Questions? Reach us on{" "}
-        <a href="https://wa.me/919999999999" className="underline">WhatsApp</a>
+        <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="underline">WhatsApp</a>
         {" "}or email{" "}
         <a href="mailto:support@snifftok.com" className="underline">support@snifftok.com</a>
       </p>
