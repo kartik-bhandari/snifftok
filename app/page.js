@@ -49,10 +49,6 @@ export default async function HomePage() {
         />
       )}
 
-      {/* Can't find it? Ask on WhatsApp — right after Best sellers */}
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <WhatsAppRequestBanner />
-      </div>
 
       {/* 3. "New arrivals" Section */}
       {displayNew.length > 0 && (
@@ -111,6 +107,11 @@ export default async function HomePage() {
           </p>
         </div>
       )}
+
+      {/* Can't find it? Ask on WhatsApp — last thing before the footer */}
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-9 sm:my-12">
+        <WhatsAppRequestBanner />
+      </div>
 
       <Footer />
     </div>
