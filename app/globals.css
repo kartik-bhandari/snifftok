@@ -120,3 +120,13 @@ body {
   .hero-zoom, .hero-rise, .hero-word, .hero-drift, .hero-scroll-cue { animation: none !important; }
   .hero-parallax { transform: none !important; }
 }
+
+/* WhatsApp ticker under the header — two identical halves, so -50% loops seamlessly */
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.ticker-track { animation: ticker-scroll 28s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+}

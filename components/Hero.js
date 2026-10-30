@@ -63,6 +63,7 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
+      id="hero"
       aria-label="Welcome to snifftok"
       // Full screen on every device; svh = the visible height on mobile browsers
       className="relative w-full h-svh min-h-[520px] overflow-hidden select-none bg-[#1a1714]"

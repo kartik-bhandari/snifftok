@@ -8,6 +8,7 @@ import { Bookmark, ShoppingBag, Plus, X, Search, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "@/context/StoreContext";
 import { useAuth } from "@/context/AuthContext";
+import WhatsAppTicker from "@/components/WhatsAppTicker";
 
 export default function Header() {
     const pathname = usePathname();
@@ -23,18 +24,26 @@ export default function Header() {
     const { user } = useAuth();
 
     const [isScrolled, setIsScrolled] = useState(false);
+    const [showTicker, setShowTicker] = useState(false);
     const wishlistCount = wishlist.length;
 
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
+            // WhatsApp ticker: once the hero is scrolled past (home), or after a
+            // short scroll on pages without a hero
+            const hero = document.getElementById("hero");
+            const threshold = hero ? hero.offsetTop + hero.offsetHeight - 80 : 160;
+            setShowTicker(window.scrollY > threshold);
         };
         handleScroll();
         window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+    }, [pathname]);
 
     const isSubpage = pathname !== "/";
+    // WhatsApp ticker only on the home page and product pages
+    const tickerAllowed = pathname === "/" || pathname.startsWith("/product/");
     const hasFrostedHeader = isSubpage || isScrolled;
 
     const scrollToSection = (e, id) => {
@@ -208,6 +217,13 @@ export default function Header() {
                     )}
                 </div>
             </div>
+
+            {/* Scrolling "can't find it? WhatsApp us" band — home (past the hero) and product pages */}
+            {tickerAllowed && (
+                <div className="pointer-events-auto">
+                    <WhatsAppTicker show={showTicker} />
+                </div>
+            )}
         </header>
     );
 }
