@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { X, CheckCircle, ChevronRight, Loader2, Package } from "lucide-react";
 import { useStore } from "@/context/StoreContext";
 import { useAuth } from "@/context/AuthContext";
+import { openRazorpayCheckout } from "@/lib/razorpayCheckout";
+import { takeResumeCheckout } from "@/lib/checkoutResume";
 
 export default function CheckoutModal() {
   const {
@@ -13,14 +16,20 @@ export default function CheckoutModal() {
     setIsCheckoutOpen,
     setIsCartOpen,
     clearCart,
-    subtotalRaw,
     shippingInfo,
-    totalAmountRaw,
     totalAmountFormatted,
     subtotalFormatted,
   } = useStore();
 
   const { user } = useAuth();
+
+  // Back from signing in to check out — reopen checkout (not on the login
+  // page itself, which signs in and then reloads the page they came from)
+  const pathname = usePathname();
+  useEffect(() => {
+    if (pathname.startsWith("/login")) return;
+    if (user && cart.length && takeResumeCheckout()) setIsCheckoutOpen(true);
+  }, [pathname, user, cart.length, setIsCheckoutOpen]);
 
   const [form, setForm] = useState({
     name: "",
@@ -33,7 +42,9 @@ export default function CheckoutModal() {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [placed, setPlaced] = useState(null); // { orderNumber }
+  const [placed, setPlaced] = useState(null); // { orderNumber, paid, needsAttention }
+  // Order created but not paid yet (Razorpay window closed or payment failed)
+  const [awaiting, setAwaiting] = useState(null); // { orderId, orderNumber, total, error }
 
   // Pre-fill from user if logged in
   useEffect(() => {
@@ -49,7 +60,62 @@ export default function CheckoutModal() {
   const close = () => {
     setIsCheckoutOpen(false);
     setPlaced(null);
+    setAwaiting(null);
     setErrors({});
+  };
+
+  const API_HEADERS = { "Content-Type": "application/json", "X-Requested-With": "snifftok-web" };
+
+  /** Order is paid / placed — empty the bag and show the success screen */
+  const finish = (result) => {
+    setAwaiting(null);
+    setPlaced(result);
+    clearCart();
+    setIsCartOpen(false);
+  };
+
+  /** Open Razorpay for an order, then verify the payment with the API */
+  const pay = async ({ orderId, orderNumber, total, razorpay }) => {
+    const outcome = await openRazorpayCheckout(razorpay, {
+      orderNumber,
+      prefill: { name: form.name.trim(), email: form.email.trim(), contact: form.phone.replace(/\s/g, "") },
+    });
+
+    if (outcome.status !== "paid") {
+      setAwaiting({ orderId, orderNumber, total, error: outcome.error });
+      return;
+    }
+
+    const res = await fetch(`/api/storefront/orders/${orderId}/verify-payment`, {
+      method: "POST", headers: API_HEADERS, credentials: "include",
+      body: JSON.stringify(outcome.response),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      // The webhook will still confirm a genuine payment — tell them where to look
+      setAwaiting({ orderId, orderNumber, total, error: data.message || "We couldn't confirm the payment yet." });
+      return;
+    }
+    finish({ orderNumber, paid: true, needsAttention: data.needsAttention });
+  };
+
+  /** "Pay now" after closing the Razorpay window */
+  const retryPayment = async () => {
+    if (!awaiting) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/storefront/orders/${awaiting.orderId}/pay`, {
+        method: "POST", headers: API_HEADERS, credentials: "include",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.paid) return finish({ orderNumber: awaiting.orderNumber, paid: true });
+      if (!res.ok) throw new Error(data.message || "Couldn't start the payment.");
+      await pay(data);
+    } catch (err) {
+      setAwaiting((a) => a && { ...a, error: err.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const validate = () => {
@@ -74,7 +140,7 @@ export default function CheckoutModal() {
     setLoading(true);
 
     try {
-      // Build payload — prices in paise
+      // What's in the bag — prices and totals are calculated by the API
       const items = cart.map((item) => ({
         productId:   item.productId ?? item.id ?? item._id,
         name:        item.name,
@@ -83,9 +149,7 @@ export default function CheckoutModal() {
         variantType: item.variantType ?? "bottle",
         sizeMl:      parseInt(item.ml) || 0,
         image:       item.image ?? "",
-        unitPrice:   Math.round((item.priceRaw ?? 0) * 100),  // rupees → paise
         quantity:    item.quantity,
-        lineTotal:   Math.round((item.priceRaw ?? 0) * 100) * item.quantity,
       }));
 
       const body = {
@@ -102,18 +166,11 @@ export default function CheckoutModal() {
           country: "India",
         },
         items,
-        subtotal:       Math.round(subtotalRaw * 100),
-        shippingAmount: Math.round(shippingInfo.totalShipping * 100),
-        total:          Math.round(totalAmountRaw * 100),
-        userId:         user?._id ?? undefined,
       };
 
       const res = await fetch("/api/storefront/orders", {
         method:  "POST",
-        headers: {
-          "Content-Type":    "application/json",
-          "X-Requested-With": "snifftok-web",
-        },
+        headers: API_HEADERS,
         credentials: "include",
         body: JSON.stringify(body),
       });
@@ -121,9 +178,8 @@ export default function CheckoutModal() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to place order");
 
-      setPlaced({ orderNumber: data.orderNumber });
-      clearCart();
-      setIsCartOpen(false);
+      // Prepaid only — the order is placed once the payment goes through
+      await pay(data);
     } catch (err) {
       setErrors({ submit: err.message });
     } finally {
@@ -194,20 +250,51 @@ export default function CheckoutModal() {
                 </div>
                 <div>
                   <p className="text-[22px] font-bold text-[#0A0A0A] tracking-tight">Thank you!</p>
-                  <p className="text-[14px] text-[#666] mt-1">Your order has been received.</p>
+                  <p className="text-[14px] text-[#666] mt-1">
+                    Payment received — your order is confirmed.
+                  </p>
                 </div>
                 <div className="bg-white rounded-[16px] px-6 py-4 w-full">
                   <p className="text-[12px] text-[#8A8A8A] uppercase tracking-wider font-semibold">Order Number</p>
                   <p className="text-[18px] font-bold text-[#0A0A0A] mt-0.5">{placed.orderNumber}</p>
                 </div>
                 <p className="text-[13px] text-[#8A8A8A] max-w-[280px]">
-                  We&apos;ll confirm your order shortly. Check your email for updates.
+                  {placed.needsAttention
+                    ? "Your payment came in after the order had expired and an item has since sold out. We'll refund you in full — or message us on WhatsApp."
+                    : "We'll pack it up and send tracking details to your email."}
                 </p>
                 <button
                   onClick={close}
                   className="mt-2 px-8 py-3 rounded-full bg-[#0A0A0A] text-white text-[13px] font-semibold hover:bg-black/90 active:scale-95 transition-all"
                 >
                   Continue Shopping
+                </button>
+              </div>
+            ) : awaiting ? (
+              /* ── PAYMENT NOT COMPLETED ── */
+              <div className="flex-1 flex flex-col items-center justify-center px-8 pb-10 text-center gap-4">
+                <div className="w-20 h-20 rounded-full bg-amber-50 flex items-center justify-center">
+                  <Package className="w-9 h-9 text-amber-500 stroke-[1.5]" />
+                </div>
+                <div>
+                  <p className="text-[20px] font-bold text-[#0A0A0A] tracking-tight">Payment not completed</p>
+                  <p className="text-[13px] text-[#666] mt-1">
+                    Your order isn&apos;t placed until the payment goes through. We&apos;ll hold your items for 30 minutes.
+                  </p>
+                </div>
+                {awaiting.error && (
+                  <p className="text-[12px] text-rose-600 bg-rose-50 rounded-[12px] px-4 py-2 w-full">{awaiting.error}</p>
+                )}
+                <button
+                  onClick={retryPayment}
+                  disabled={loading}
+                  className="w-full py-3.5 rounded-full bg-[#0A0A0A] text-white text-[14px] font-semibold hover:bg-black/90 active:scale-95 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Pay ₹{Math.round(awaiting.total / 100).toLocaleString("en-IN")} now
+                </button>
+                <button onClick={close} className="text-[12px] text-[#8A8A8A] hover:text-[#0A0A0A] underline underline-offset-2">
+                  Cancel
                 </button>
               </div>
             ) : (

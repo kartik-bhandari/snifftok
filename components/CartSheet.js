@@ -5,7 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { X, Plus, Minus, Trash2, ShoppingBag, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname, useRouter } from "next/navigation";
 import { useStore } from "@/context/StoreContext";
+import { useAuth } from "@/context/AuthContext";
+import { rememberCheckout } from "@/lib/checkoutResume";
 
 export default function CartSheet() {
   const {
@@ -19,6 +22,20 @@ export default function CartSheet() {
     totalAmountFormatted,
     setIsCheckoutOpen,
   } = useStore();
+  const { user } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Checkout needs an account — guests sign in first and come straight back
+  const startCheckout = () => {
+    setIsCartOpen(false);
+    if (user) {
+      setIsCheckoutOpen(true);
+      return;
+    }
+    rememberCheckout();
+    router.push(`/login?from=${encodeURIComponent(pathname)}&reason=checkout`);
+  };
 
   return (
     <AnimatePresence>
@@ -200,13 +217,10 @@ export default function CartSheet() {
 
                 <button
                   id="checkout-cta-btn"
-                  onClick={() => {
-                    setIsCartOpen(false);
-                    setIsCheckoutOpen(true);
-                  }}
+                  onClick={startCheckout}
                   className="w-full py-3.5 rounded-full bg-[#0A0A0A] text-white text-[13px] font-semibold tracking-wider uppercase hover:bg-black/90 active:scale-98 transition-all shadow-md"
                 >
-                  Proceed to Checkout
+                  {user ? "Proceed to Checkout" : "Sign in to Checkout"}
                 </button>
 
                 <p className="text-[11px] text-center text-[#8A8A8A]">

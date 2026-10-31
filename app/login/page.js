@@ -16,7 +16,7 @@ const slide = {
 };
 
 // ─── Step 1: Email input ──────────────────────────────────────────────────────
-function StepEmail({ onNext }) {
+function StepEmail({ onNext, forCheckout }) {
   const { sendOtp, redirectToAdmin } = useAuth();
   const [email, setEmail]     = useState("");
   const [error, setError]     = useState("");
@@ -48,7 +48,9 @@ function StepEmail({ onNext }) {
     <motion.div key="email" {...slide} className="w-full max-w-sm">
       <div className="text-center mb-8">
         <span className="font-wordmark text-[#0A0A0A] text-3xl tracking-widest">snifftok</span>
-        <p className="text-[#8A8A8A] text-xs mt-1.5">Sign in or create your account</p>
+        <p className="text-[#8A8A8A] text-xs mt-1.5">
+          {forCheckout ? "Sign in to check out — your bag is saved" : "Sign in or create your account"}
+        </p>
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm border border-[#E8E8E8] p-6">
@@ -346,6 +348,7 @@ function LoginContent() {
         {step === "email" && (
           <StepEmail
             key="email"
+            forCheckout={searchParams.get("reason") === "checkout"}
             onNext={(e) => { setEmail(e); setStep("otp"); }}
           />
         )}
